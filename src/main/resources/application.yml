@@ -1,0 +1,71 @@
+info:
+  app:
+    name: Job Processor
+    version: 1.0
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:6432/postgres?readOnly=true
+    username: postgres
+    password: postgres
+    driverClassName: org.postgresql.Driver
+    hikari:
+      maximumPoolSize: 50
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQL10Dialect
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: casev3
+        jdbc:
+          batch_size: 500
+          order_inserts: true
+          lob:
+            non_contextual_creation: true
+  task:
+    scheduling:
+      pool:
+        size: 10
+
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
+
+logging:
+  profile: DEV
+  level:
+    root: INFO
+
+notifyservice:
+  connection:
+    scheme: http
+    host: localhost
+    port: 8162
+
+exportfiledestinationconfigfile: dummy-export-file-destination-config.json
+
+queueconfig:
+  new-case-topic: event_new-case
+  print-fulfilment-topic: event_print-fulfilment
+  deactivate-uac-topic: event_deactivate-uac
+  refusal-event-topic: event_refusal
+  invalid-case-event-topic: event_invalid-case
+  update-sample-topic: event_update-sample
+  update-sample-sensitive-topic: event_update-sample-sensitive
+  survey-update-event-topic: event_survey-update
+  collection-exercise-update-event-topic: event_collection-exercise-update
+  publishtimeout: 30  # In seconds
+  shared-pubsub-project: REPLACEME
+
+exceptionmanager:
+  connection:
+    scheme: http
+    host: localhost
+    port: 8666
+
+ras-rm-sample-service:
+  connection:
+    scheme: http
+    host: localhost
+    port: 8125
