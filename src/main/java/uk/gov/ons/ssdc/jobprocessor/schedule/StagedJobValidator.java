@@ -38,14 +38,6 @@ public class StagedJobValidator {
         if (rowChunkValidator.processChunk(job)) {
           jobStatus = JobStatus.VALIDATED_WITH_ERRORS;
         }
-
-        if (jobStatus == JobStatus.VALIDATED_TOTAL_FAILURE) {
-          break;
-        }
-      }
-
-      if (jobStatus == JobStatus.VALIDATED_TOTAL_FAILURE) {
-        jobRowRepository.deleteByJob(job);
       }
 
       job.setJobStatus(jobStatus);
