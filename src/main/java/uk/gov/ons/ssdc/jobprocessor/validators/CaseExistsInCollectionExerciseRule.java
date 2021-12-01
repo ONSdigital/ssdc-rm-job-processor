@@ -6,7 +6,7 @@ import org.springframework.context.ApplicationContext;
 import uk.gov.ons.ssdc.common.model.entity.CollectionExercise;
 import uk.gov.ons.ssdc.common.validation.Rule;
 import uk.gov.ons.ssdc.jobprocessor.config.ApplicationContextProvider;
-import uk.gov.ons.ssdc.jobprocessor.utility.CaseRepository;
+import uk.gov.ons.ssdc.jobprocessor.repository.CaseRepository;
 
 public class CaseExistsInCollectionExerciseRule implements Rule {
   private final CollectionExercise collectionExercise;

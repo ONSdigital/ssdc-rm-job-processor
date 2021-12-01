@@ -11,7 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.ons.ssdc.common.model.entity.CollectionExercise;
-import uk.gov.ons.ssdc.jobprocessor.utility.CaseRepository;
+import uk.gov.ons.ssdc.jobprocessor.repository.CaseRepository;
 
 @ExtendWith(MockitoExtension.class)
 class CaseExistsInCollectionExerciseRuleTest {

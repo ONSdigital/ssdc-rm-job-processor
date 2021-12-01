@@ -1,4 +1,4 @@
-package uk.gov.ons.ssdc.jobprocessor.utility;
+package uk.gov.ons.ssdc.jobprocessor.repository;
 
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;

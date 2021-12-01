@@ -1,7 +1,5 @@
 package uk.gov.ons.ssdc.jobprocessor.schedule;
 
-import com.godaddy.logging.Logger;
-import com.godaddy.logging.LoggerFactory;
 import java.util.List;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -14,8 +12,6 @@ import uk.gov.ons.ssdc.jobprocessor.repository.JobRowRepository;
 
 @Component
 public class ValidatedJobProcessor {
-  private static final Logger log = LoggerFactory.getLogger(ValidatedJobProcessor.class);
-
   private final JobRepository jobRepository;
   private final JobRowRepository jobRowRepository;
   private final RowChunkProcessor rowChunkProcessor;
