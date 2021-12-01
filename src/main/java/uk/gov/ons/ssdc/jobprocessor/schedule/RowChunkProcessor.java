@@ -37,9 +37,7 @@ public class RowChunkProcessor {
   }
 
   @Transactional(propagation = Propagation.REQUIRES_NEW)
-  public boolean processChunk(Job job) {
-    boolean hadErrors = false;
-
+  public void processChunk(Job job) {
     JobTypeSettings jobTypeSettings =
         jobTypeHelper.getJobTypeSettings(job.getJobType(), job.getCollectionExercise());
 
@@ -74,7 +72,5 @@ public class RowChunkProcessor {
 
     jobRepository.save(job);
     jobRowRepository.saveAll(jobRows);
-
-    return hadErrors;
   }
 }
