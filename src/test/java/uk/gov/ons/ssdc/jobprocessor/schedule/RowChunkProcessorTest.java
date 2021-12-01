@@ -47,7 +47,8 @@ class RowChunkProcessorTest {
     job.setCollectionExercise(collectionExercise);
 
     Transformer transformer = mock(Transformer.class);
-    ColumnValidator[] columnValidators = new ColumnValidator[] {new ColumnValidator("test column", false, new Rule[0])};
+    ColumnValidator[] columnValidators =
+        new ColumnValidator[] {new ColumnValidator("test column", false, new Rule[0])};
 
     JobTypeSettings jobTypeSettings = new JobTypeSettings(JobType.SAMPLE);
     jobTypeSettings.setTopic("Test topic");
