@@ -39,6 +39,7 @@ public class ValidatedJobProcessorIT {
   private static final String NEW_CASE_SUBSCRIPTION = "event_new-case_rm-case-processor";
   private static final String REFUSAL_SUBSCRIPTION = "event_refusal_rm-case-processor";
   private static final String INVALID_SUBSCRIPTION = "event_invalid-case_rm-case-processor";
+  private static final String UPDATE_SAMPLE_SUBSCRIPTION = "event_update-sample_rm-case-processor";
 
   @Autowired private JobRepository jobRepository;
 
@@ -55,13 +56,17 @@ public class ValidatedJobProcessorIT {
   private String refusalEventTopic;
 
   @Value("${queueconfig.invalid-case-event-topic}")
-  private String invalidCaseTopic;
+  private String invalidCaseEventTopic;
+
+  @Value("${queueconfig.update-sample-topic}")
+  private String updateSampleTopic;
 
   @BeforeEach
   public void setUp() {
     pubsubHelper.purgeSharedProjectMessages(NEW_CASE_SUBSCRIPTION, newCaseTopic);
     pubsubHelper.purgeSharedProjectMessages(REFUSAL_SUBSCRIPTION, refusalEventTopic);
-    pubsubHelper.purgeSharedProjectMessages(INVALID_SUBSCRIPTION, invalidCaseTopic);
+    pubsubHelper.purgeSharedProjectMessages(INVALID_SUBSCRIPTION, invalidCaseEventTopic);
+    pubsubHelper.purgeSharedProjectMessages(UPDATE_SAMPLE_SUBSCRIPTION, updateSampleTopic);
   }
 
   @Test
@@ -196,6 +201,55 @@ public class ValidatedJobProcessorIT {
       assertThat(emittedEvent.getPayload().getInvalidCase()).isNotNull();
       assertThat(emittedEvent.getPayload().getInvalidCase().getCaseId()).isEqualTo(caze.getId());
       assertThat(emittedEvent.getPayload().getInvalidCase().getReason()).isEqualTo("why");
+
+      Job processedJob = jobRepository.findById(job.getId()).get();
+      assertThat(processedJob.getJobStatus()).isEqualTo(JobStatus.PROCESSED);
+      assertThat(processedJob.getProcessingRowNumber()).isEqualTo(1);
+
+      Optional<JobRow> optionalJobRow = jobRowRepository.findById(jobRow.getId());
+      assertThat(optionalJobRow.isPresent()).isFalse();
+    }
+  }
+
+  @Test
+  void processStagedJobsBulkUpdateSample() throws InterruptedException {
+    try (QueueSpy<EventDTO> surveyUpdateQueue =
+        pubsubHelper.sharedProjectListen(UPDATE_SAMPLE_SUBSCRIPTION, EventDTO.class)) {
+      Case caze = junkDataHelper.setupJunkCase();
+      CollectionExercise collectionExercise = caze.getCollectionExercise();
+
+      Job job = new Job();
+      job.setId(UUID.randomUUID());
+      job.setCollectionExercise(collectionExercise);
+      job.setJobStatus(JobStatus.VALIDATED_OK);
+      job.setJobType(JobType.BULK_UPDATE_SAMPLE);
+      job.setCreatedBy("norman");
+      job.setCreatedAt(OffsetDateTime.now());
+      job.setFileId(UUID.randomUUID());
+      job.setFileName("normansfile.csv");
+      job = jobRepository.saveAndFlush(job);
+
+      JobRow jobRow = new JobRow();
+      jobRow.setId(UUID.randomUUID());
+      jobRow.setJob(job);
+      jobRow.setJobRowStatus(JobRowStatus.VALIDATED_OK);
+      jobRow.setRowData(
+          Map.of(
+              "caseId", caze.getId().toString(), "fieldToUpdate", "Junk", "newValue", "updated"));
+      jobRow.setOriginalRowData(new String[] {"foo", "bar"});
+      jobRowRepository.saveAndFlush(jobRow);
+
+      // This will unleash the hounds
+      job.setJobStatus(JobStatus.PROCESSING_IN_PROGRESS);
+      jobRepository.saveAndFlush(job);
+
+      // Now check that the job processed OK
+      EventDTO emittedEvent = surveyUpdateQueue.getQueue().poll(20, TimeUnit.SECONDS);
+      assertThat(emittedEvent).isNotNull();
+      assertThat(emittedEvent.getPayload().getUpdateSample()).isNotNull();
+      assertThat(emittedEvent.getPayload().getUpdateSample().getCaseId()).isEqualTo(caze.getId());
+      assertThat(emittedEvent.getPayload().getUpdateSample().getSample().get("Junk"))
+          .isEqualTo("updated");
 
       Job processedJob = jobRepository.findById(job.getId()).get();
       assertThat(processedJob.getJobStatus()).isEqualTo(JobStatus.PROCESSED);
