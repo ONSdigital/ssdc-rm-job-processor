@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.ons.ssdc.jobprocessor.utility.ObjectMapperFactory;
 
 @Component
 @ActiveProfiles("test")
