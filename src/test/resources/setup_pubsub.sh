@@ -3,6 +3,9 @@
 # Wait for pubsub-emulator to come up
 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' '$PUBSUB_SETUP_HOST')" != "200" ]]; do sleep 1; done'
 
+curl -X PUT http://$PUBSUB_SETUP_HOST/v1/projects/shared-project/topics/event_new-case
+curl -X PUT http://$PUBSUB_SETUP_HOST/v1/projects/shared-project/subscriptions/event_new-case_rm-case-processor -H 'Content-Type: application/json' -d '{"topic": "projects/shared-project/topics/event_new-case"}'
+
 curl -X PUT http://$PUBSUB_SETUP_HOST/v1/projects/shared-project/topics/event_refusal
 curl -X PUT http://$PUBSUB_SETUP_HOST/v1/projects/shared-project/subscriptions/event_refusal_rm-case-processor -H 'Content-Type: application/json' -d '{"topic": "projects/shared-project/topics/event_refusal"}'
 
