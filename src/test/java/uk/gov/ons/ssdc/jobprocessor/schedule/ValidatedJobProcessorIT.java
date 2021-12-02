@@ -2,12 +2,12 @@ package uk.gov.ons.ssdc.jobprocessor.schedule;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +40,8 @@ public class ValidatedJobProcessorIT {
   private static final String REFUSAL_SUBSCRIPTION = "event_refusal_rm-case-processor";
   private static final String INVALID_SUBSCRIPTION = "event_invalid-case_rm-case-processor";
   private static final String UPDATE_SAMPLE_SUBSCRIPTION = "event_update-sample_rm-case-processor";
+  private static final String UPDATE_SAMPLE_SENSITIVE_SUBSCRIPTION =
+      "event_update-sample-sensitive_rm-case-processor";
 
   @Autowired private JobRepository jobRepository;
 
@@ -61,16 +63,13 @@ public class ValidatedJobProcessorIT {
   @Value("${queueconfig.update-sample-topic}")
   private String updateSampleTopic;
 
-  @BeforeEach
-  public void setUp() {
-    pubsubHelper.purgeSharedProjectMessages(NEW_CASE_SUBSCRIPTION, newCaseTopic);
-    pubsubHelper.purgeSharedProjectMessages(REFUSAL_SUBSCRIPTION, refusalEventTopic);
-    pubsubHelper.purgeSharedProjectMessages(INVALID_SUBSCRIPTION, invalidCaseEventTopic);
-    pubsubHelper.purgeSharedProjectMessages(UPDATE_SAMPLE_SUBSCRIPTION, updateSampleTopic);
-  }
+  @Value("${queueconfig.update-sample-sensitive-topic}")
+  private String updateSampleSensitiveTopic;
 
   @Test
   void processStagedJobsSample() throws InterruptedException {
+    pubsubHelper.purgeSharedProjectMessages(NEW_CASE_SUBSCRIPTION, newCaseTopic);
+
     try (QueueSpy<EventDTO> surveyUpdateQueue =
         pubsubHelper.sharedProjectListen(NEW_CASE_SUBSCRIPTION, EventDTO.class)) {
       CollectionExercise collectionExercise = junkDataHelper.setupJunkCollex();
@@ -109,7 +108,7 @@ public class ValidatedJobProcessorIT {
       assertThat(emittedEvent.getPayload().getNewCase().getSampleSensitive().get("SensitiveJunk"))
           .isEqualTo("sensitive");
 
-      Job processedJob = jobRepository.findById(job.getId()).get();
+      Job processedJob = getProcessedJob(job.getId());
       assertThat(processedJob.getJobStatus()).isEqualTo(JobStatus.PROCESSED);
       assertThat(processedJob.getProcessingRowNumber()).isEqualTo(1);
 
@@ -120,6 +119,8 @@ public class ValidatedJobProcessorIT {
 
   @Test
   void processStagedJobsBulkRefusal() throws InterruptedException {
+    pubsubHelper.purgeSharedProjectMessages(REFUSAL_SUBSCRIPTION, refusalEventTopic);
+
     try (QueueSpy<EventDTO> surveyUpdateQueue =
         pubsubHelper.sharedProjectListen(REFUSAL_SUBSCRIPTION, EventDTO.class)) {
       Case caze = junkDataHelper.setupJunkCase();
@@ -156,7 +157,7 @@ public class ValidatedJobProcessorIT {
       assertThat(emittedEvent.getPayload().getRefusal().getType())
           .isEqualTo(RefusalTypeDTO.HARD_REFUSAL);
 
-      Job processedJob = jobRepository.findById(job.getId()).get();
+      Job processedJob = getProcessedJob(job.getId());
       assertThat(processedJob.getJobStatus()).isEqualTo(JobStatus.PROCESSED);
       assertThat(processedJob.getProcessingRowNumber()).isEqualTo(1);
 
@@ -167,6 +168,8 @@ public class ValidatedJobProcessorIT {
 
   @Test
   void processStagedJobsBulkInvalid() throws InterruptedException {
+    pubsubHelper.purgeSharedProjectMessages(INVALID_SUBSCRIPTION, invalidCaseEventTopic);
+
     try (QueueSpy<EventDTO> surveyUpdateQueue =
         pubsubHelper.sharedProjectListen(INVALID_SUBSCRIPTION, EventDTO.class)) {
       Case caze = junkDataHelper.setupJunkCase();
@@ -202,7 +205,7 @@ public class ValidatedJobProcessorIT {
       assertThat(emittedEvent.getPayload().getInvalidCase().getCaseId()).isEqualTo(caze.getId());
       assertThat(emittedEvent.getPayload().getInvalidCase().getReason()).isEqualTo("why");
 
-      Job processedJob = jobRepository.findById(job.getId()).get();
+      Job processedJob = getProcessedJob(job.getId());
       assertThat(processedJob.getJobStatus()).isEqualTo(JobStatus.PROCESSED);
       assertThat(processedJob.getProcessingRowNumber()).isEqualTo(1);
 
@@ -213,6 +216,8 @@ public class ValidatedJobProcessorIT {
 
   @Test
   void processStagedJobsBulkUpdateSample() throws InterruptedException {
+    pubsubHelper.purgeSharedProjectMessages(UPDATE_SAMPLE_SUBSCRIPTION, updateSampleTopic);
+
     try (QueueSpy<EventDTO> surveyUpdateQueue =
         pubsubHelper.sharedProjectListen(UPDATE_SAMPLE_SUBSCRIPTION, EventDTO.class)) {
       Case caze = junkDataHelper.setupJunkCase();
@@ -251,12 +256,96 @@ public class ValidatedJobProcessorIT {
       assertThat(emittedEvent.getPayload().getUpdateSample().getSample().get("Junk"))
           .isEqualTo("updated");
 
-      Job processedJob = jobRepository.findById(job.getId()).get();
+      Job processedJob = getProcessedJob(job.getId());
       assertThat(processedJob.getJobStatus()).isEqualTo(JobStatus.PROCESSED);
       assertThat(processedJob.getProcessingRowNumber()).isEqualTo(1);
 
       Optional<JobRow> optionalJobRow = jobRowRepository.findById(jobRow.getId());
       assertThat(optionalJobRow.isPresent()).isFalse();
     }
+  }
+
+  @Test
+  void processStagedJobsBulkUpdateSampleSensitive() throws InterruptedException {
+    pubsubHelper.purgeSharedProjectMessages(
+        UPDATE_SAMPLE_SENSITIVE_SUBSCRIPTION, updateSampleSensitiveTopic);
+
+    try (QueueSpy<EventDTO> surveyUpdateQueue =
+        pubsubHelper.sharedProjectListen(UPDATE_SAMPLE_SENSITIVE_SUBSCRIPTION, EventDTO.class)) {
+      Case caze = junkDataHelper.setupJunkCase();
+      CollectionExercise collectionExercise = caze.getCollectionExercise();
+
+      Job job = new Job();
+      job.setId(UUID.randomUUID());
+      job.setCollectionExercise(collectionExercise);
+      job.setJobStatus(JobStatus.VALIDATED_OK);
+      job.setJobType(JobType.BULK_UPDATE_SAMPLE_SENSITIVE);
+      job.setCreatedBy("norman");
+      job.setCreatedAt(OffsetDateTime.now());
+      job.setFileId(UUID.randomUUID());
+      job.setFileName("normansfile.csv");
+      job = jobRepository.saveAndFlush(job);
+
+      JobRow jobRow = new JobRow();
+      jobRow.setId(UUID.randomUUID());
+      jobRow.setJob(job);
+      jobRow.setJobRowStatus(JobRowStatus.VALIDATED_OK);
+      jobRow.setRowData(
+          Map.of(
+              "caseId",
+              caze.getId().toString(),
+              "fieldToUpdate",
+              "SensitiveJunk",
+              "newValue",
+              "updated"));
+      jobRow.setOriginalRowData(new String[] {"foo", "bar"});
+      jobRowRepository.saveAndFlush(jobRow);
+
+      // This will unleash the hounds
+      job.setJobStatus(JobStatus.PROCESSING_IN_PROGRESS);
+      jobRepository.saveAndFlush(job);
+
+      // Now check that the job processed OK
+      EventDTO emittedEvent = surveyUpdateQueue.getQueue().poll(20, TimeUnit.SECONDS);
+      assertThat(emittedEvent).isNotNull();
+      assertThat(emittedEvent.getPayload().getUpdateSampleSensitive()).isNotNull();
+      assertThat(emittedEvent.getPayload().getUpdateSampleSensitive().getCaseId())
+          .isEqualTo(caze.getId());
+      assertThat(
+              emittedEvent
+                  .getPayload()
+                  .getUpdateSampleSensitive()
+                  .getSampleSensitive()
+                  .get("SensitiveJunk"))
+          .isEqualTo("updated");
+
+      Job processedJob = getProcessedJob(job.getId());
+      assertThat(processedJob.getJobStatus()).isEqualTo(JobStatus.PROCESSED);
+      assertThat(processedJob.getProcessingRowNumber()).isEqualTo(1);
+
+      Optional<JobRow> optionalJobRow = jobRowRepository.findById(jobRow.getId());
+      assertThat(optionalJobRow.isPresent()).isFalse();
+    }
+  }
+
+  private Job getProcessedJob(UUID jobId) {
+    LocalTime testTimeout = LocalTime.now().plusSeconds(60);
+
+    Job processedJob = null;
+
+    do {
+      if (processedJob != null) {
+        try {
+          Thread.sleep(1000);
+        } catch (InterruptedException e) {
+          // Ignored
+        }
+      }
+
+      processedJob = jobRepository.findById(jobId).get();
+    } while (processedJob.getJobStatus() == JobStatus.PROCESSING_IN_PROGRESS
+        && LocalTime.now().isBefore(testTimeout));
+
+    return processedJob;
   }
 }
