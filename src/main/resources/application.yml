@@ -39,7 +39,7 @@ logging:
 
 healthcheck:
   frequency: 15000 #milliseconds
-  filename: /tmp/case-processor-healthy
+  filename: /tmp/job-processor-healthy
 
 queueconfig:
   new-case-topic: event_new-case
