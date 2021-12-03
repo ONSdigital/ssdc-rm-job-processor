@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:16445/postgres
+
+  cloud:
+    gcp:
+      pubsub:
+        emulator-host: localhost:18545
+        project-id: our-project
+
+queueconfig:
+  shared-pubsub-project: shared-project
+
+dummyuseridentity-allowed: true # This ** MUST ALWAYS!! ** be false in production!!!
+dummyuseridentity: integration-tests@testymctest.com

@@ -1,0 +1,44 @@
+sudo: required
+
+services:
+- docker
+
+language: java
+jdk: openjdk17
+
+env:
+  global:
+  - IMAGE_NAME="$DOCKER_GCP_LOCATION/ssdc-rm-job-processor"
+
+before_install:
+  - mvn fmt:check
+  - docker login -u "${DOCKER_GCP_USERNAME}" -p "${DOCKER_GCP_PASSWORD}" "${DOCKER_GCP_REGISTRY}";
+  - docker login -u "${DOCKERHUB_USERNAME}" -p "${DOCKERHUB_PASSWORD}";
+  - docker network create ssdcrmdockerdev_default
+  - echo "$DOCKER_GCP_PASSWORD" > ~/google-service-account-key.json
+  - export GOOGLE_APPLICATION_CREDENTIALS=~/google-service-account-key.json
+
+install: echo "SKIPPING DEFAULT INSTALL" # Travis has a default maven install. Don't build twice!
+
+script: travis_wait mvn verify jacoco:report
+
+after_success:
+  - gpg --no-default-keyring --keyring trustedkeys.gpg --import codecov_public_key.asc
+  - curl -Os https://uploader.codecov.io/latest/linux/codecov
+  - curl -Os https://uploader.codecov.io/latest/linux/codecov.SHA256SUM
+  - curl -Os https://uploader.codecov.io/latest/linux/codecov.SHA256SUM.sig
+
+  # NOTE: the "|| exit 1"'s are required to stop travis continuing to run subsequent steps even if the integrity checks failed
+  - gpgv codecov.SHA256SUM.sig codecov.SHA256SUM || exit 1
+  - shasum -a 256 -c codecov.SHA256SUM || exit 1
+
+  - chmod +x codecov
+  - ./codecov
+
+cache:
+  directories:
+  - $HOME/.m2
+
+branches:
+  only:
+  - main
