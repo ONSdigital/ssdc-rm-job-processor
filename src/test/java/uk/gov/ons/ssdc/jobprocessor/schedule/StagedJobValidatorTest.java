@@ -35,7 +35,8 @@ class StagedJobValidatorTest {
     when(jobRowRepository.existsByJobAndJobRowStatus(job, JobRowStatus.STAGED))
         .thenReturn(true)
         .thenReturn(false);
-    when(rowChunkValidator.processChunk(job)).thenReturn(false);
+    when(jobRowRepository.existsByJobAndJobRowStatus(job, JobRowStatus.VALIDATED_ERROR))
+        .thenReturn(false);
 
     // When
     underTest.processStagedJobs();
@@ -60,7 +61,8 @@ class StagedJobValidatorTest {
         .thenReturn(true)
         .thenReturn(true)
         .thenReturn(false);
-    when(rowChunkValidator.processChunk(job)).thenReturn(false);
+    when(jobRowRepository.existsByJobAndJobRowStatus(job, JobRowStatus.VALIDATED_ERROR))
+        .thenReturn(false);
 
     // When
     underTest.processStagedJobs();
@@ -83,7 +85,8 @@ class StagedJobValidatorTest {
     when(jobRowRepository.existsByJobAndJobRowStatus(job, JobRowStatus.STAGED))
         .thenReturn(true)
         .thenReturn(false);
-    when(rowChunkValidator.processChunk(job)).thenReturn(true);
+    when(jobRowRepository.existsByJobAndJobRowStatus(job, JobRowStatus.VALIDATED_ERROR))
+        .thenReturn(true);
 
     // When
     underTest.processStagedJobs();

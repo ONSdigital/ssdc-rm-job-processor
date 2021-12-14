@@ -32,12 +32,14 @@ public class StagedJobValidator {
     List<Job> jobs = jobRepository.findByJobStatus(JobStatus.VALIDATION_IN_PROGRESS);
 
     for (Job job : jobs) {
-      JobStatus jobStatus = JobStatus.VALIDATED_OK;
 
       while (jobRowRepository.existsByJobAndJobRowStatus(job, JobRowStatus.STAGED)) {
-        if (rowChunkValidator.processChunk(job)) {
-          jobStatus = JobStatus.VALIDATED_WITH_ERRORS;
-        }
+        rowChunkValidator.processChunk(job);
+      }
+
+      JobStatus jobStatus = JobStatus.VALIDATED_OK;
+      if (jobRowRepository.existsByJobAndJobRowStatus(job, JobRowStatus.VALIDATED_ERROR)) {
+        jobStatus = JobStatus.VALIDATED_WITH_ERRORS;
       }
 
       job.setJobStatus(jobStatus);
