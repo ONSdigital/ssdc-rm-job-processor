@@ -30,9 +30,7 @@ public class RowChunkValidator {
   }
 
   @Transactional(propagation = Propagation.REQUIRES_NEW)
-  public boolean processChunk(Job job) {
-    boolean hadErrors = false;
-
+  public void processChunk(Job job) {
     JobTypeSettings jobTypeSettings =
         jobTypeHelper.getJobTypeSettings(job.getJobType(), job.getCollectionExercise());
 
@@ -68,7 +66,6 @@ public class RowChunkValidator {
             rowStatus = JobRowStatus.VALIDATED_ERROR;
             rowValidationErrors.add(
                 String.format("fieldToUpdate column %s does not exist", fieldToUpdate));
-            hadErrors = true;
             columnValidators = new ColumnValidator[0];
           }
         }
@@ -80,7 +77,6 @@ public class RowChunkValidator {
         if (columnValidationErrors.isPresent()) {
           rowStatus = JobRowStatus.VALIDATED_ERROR;
           rowValidationErrors.add(columnValidationErrors.get());
-          hadErrors = true;
         }
       }
 
@@ -95,7 +91,5 @@ public class RowChunkValidator {
 
     jobRowRepository.saveAll(jobRows);
     jobRepository.saveAndFlush(job);
-
-    return hadErrors;
   }
 }
