@@ -61,7 +61,7 @@
     <dependency>
       <groupId>uk.gov.ons.ssdc</groupId>
       <artifactId>ssdc-shared-sample-validation</artifactId>
-      <version>1.4.1-SNAPSHOT</version>
+      <version>1.4.2-SNAPSHOT</version>
     </dependency>
 
     <dependency>
