@@ -9,3 +9,9 @@ format:
 
 format-check:
 	mvn fmt:check
+
+test:
+    mvn clean verify jacoco:report
+
+docker-build:
+    docker build . -t eu.gcr.io/ssdc-rm-ci/rm/ssdc-rm-case-api:latest
