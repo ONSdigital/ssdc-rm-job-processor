@@ -11,9 +11,9 @@ import uk.gov.ons.ssdc.common.model.entity.JobRow;
 import uk.gov.ons.ssdc.common.model.entity.JobRowStatus;
 import uk.gov.ons.ssdc.common.validation.ColumnValidator;
 import uk.gov.ons.ssdc.jobprocessor.exceptions.ValidatorFieldNotFoundException;
+import uk.gov.ons.ssdc.jobprocessor.jobtype.processors.JobTypeProcessor;
 import uk.gov.ons.ssdc.jobprocessor.repository.JobRepository;
 import uk.gov.ons.ssdc.jobprocessor.repository.JobRowRepository;
-import uk.gov.ons.ssdc.jobprocessor.utility.JobProcessor;
 import uk.gov.ons.ssdc.jobprocessor.utility.JobTypeHelper;
 
 @Component
@@ -31,7 +31,7 @@ public class RowChunkValidator {
 
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public void processChunk(Job job) {
-    JobProcessor jobProcessor =
+    JobTypeProcessor jobTypeProcessor =
         jobTypeHelper.getJobTypeProcessor(job.getJobType(), job.getCollectionExercise());
 
     List<JobRow> jobRows =
@@ -43,7 +43,7 @@ public class RowChunkValidator {
       ColumnValidator[] columnValidators;
 
       try {
-        columnValidators = jobProcessor.getColumnValidators(jobRow);
+        columnValidators = jobTypeProcessor.getColumnValidators(jobRow);
       } catch (ValidatorFieldNotFoundException exception) {
         rowStatus = JobRowStatus.VALIDATED_ERROR;
         rowValidationErrors.add(

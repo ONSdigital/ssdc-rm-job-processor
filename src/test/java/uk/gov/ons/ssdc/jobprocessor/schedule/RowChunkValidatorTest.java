@@ -22,13 +22,13 @@ import uk.gov.ons.ssdc.common.validation.ColumnValidator;
 import uk.gov.ons.ssdc.common.validation.LengthRule;
 import uk.gov.ons.ssdc.common.validation.MandatoryRule;
 import uk.gov.ons.ssdc.common.validation.Rule;
+import uk.gov.ons.ssdc.jobprocessor.jobtype.processors.BulkUpdateSampleTypeProcessor;
+import uk.gov.ons.ssdc.jobprocessor.jobtype.processors.BulkUpdateSensitiveSampleTypeProcessor;
+import uk.gov.ons.ssdc.jobprocessor.jobtype.processors.JobTypeProcessor;
+import uk.gov.ons.ssdc.jobprocessor.jobtype.processors.SampleLoadTypeProcessor;
 import uk.gov.ons.ssdc.jobprocessor.repository.JobRepository;
 import uk.gov.ons.ssdc.jobprocessor.repository.JobRowRepository;
-import uk.gov.ons.ssdc.jobprocessor.utility.BulkUpdateSampleProcessor;
-import uk.gov.ons.ssdc.jobprocessor.utility.BulkUpdateSensitiveSampleProcessor;
-import uk.gov.ons.ssdc.jobprocessor.utility.JobProcessor;
 import uk.gov.ons.ssdc.jobprocessor.utility.JobTypeHelper;
-import uk.gov.ons.ssdc.jobprocessor.utility.SampleLoadProcessor;
 
 @ExtendWith(MockitoExtension.class)
 class RowChunkValidatorTest {
@@ -55,14 +55,14 @@ class RowChunkValidatorTest {
     survey.setSampleValidationRules(columnValidators);
     collectionExercise.setSurvey(survey);
 
-    JobProcessor jobProcessor = new SampleLoadProcessor("", "", collectionExercise);
+    JobTypeProcessor jobTypeProcessor = new SampleLoadTypeProcessor("", "", collectionExercise);
 
     JobRow jobRow = new JobRow();
     jobRow.setRowData(Map.of("test column", "test data"));
     List<JobRow> jobRows = List.of(jobRow);
 
     when(jobTypeHelper.getJobTypeProcessor(job.getJobType(), collectionExercise))
-        .thenReturn(jobProcessor);
+        .thenReturn(jobTypeProcessor);
 
     when(jobRowRepository.findTop500ByJobAndJobRowStatus(job, JobRowStatus.STAGED))
         .thenReturn(jobRows);
@@ -104,14 +104,14 @@ class RowChunkValidatorTest {
     survey.setSampleValidationRules(columnValidators);
     collectionExercise.setSurvey(survey);
 
-    JobProcessor jobProcessor = new SampleLoadProcessor("", "", collectionExercise);
+    JobTypeProcessor jobTypeProcessor = new SampleLoadTypeProcessor("", "", collectionExercise);
 
     JobRow jobRow = new JobRow();
     jobRow.setRowData(Map.of("test column", ""));
     List<JobRow> jobRows = List.of(jobRow);
 
     when(jobTypeHelper.getJobTypeProcessor(job.getJobType(), collectionExercise))
-        .thenReturn(jobProcessor);
+        .thenReturn(jobTypeProcessor);
 
     when(jobRowRepository.findTop500ByJobAndJobRowStatus(job, JobRowStatus.STAGED))
         .thenReturn(jobRows);
@@ -154,15 +154,16 @@ class RowChunkValidatorTest {
     survey.setSampleValidationRules(columnValidators);
     collectionExercise.setSurvey(survey);
 
-    JobProcessor jobProcessor = new BulkUpdateSampleProcessor("", "", collectionExercise);
-    jobProcessor.setSampleOrSensitiveValidationsMap(Map.of("test column", columnValidators));
+    JobTypeProcessor jobTypeProcessor =
+        new BulkUpdateSampleTypeProcessor("", "", collectionExercise);
+    jobTypeProcessor.setSampleOrSensitiveValidationsMap(Map.of("test column", columnValidators));
 
     JobRow jobRow = new JobRow();
     jobRow.setRowData(Map.of("fieldToUpdate", "test column", "newValue", "test data"));
     List<JobRow> jobRows = List.of(jobRow);
 
     when(jobTypeHelper.getJobTypeProcessor(job.getJobType(), collectionExercise))
-        .thenReturn(jobProcessor);
+        .thenReturn(jobTypeProcessor);
 
     when(jobRowRepository.findTop500ByJobAndJobRowStatus(job, JobRowStatus.STAGED))
         .thenReturn(jobRows);
@@ -204,15 +205,16 @@ class RowChunkValidatorTest {
     survey.setSampleValidationRules(columnValidators);
     collectionExercise.setSurvey(survey);
 
-    JobProcessor jobProcessor = new BulkUpdateSampleProcessor("", "", collectionExercise);
-    jobProcessor.setSampleOrSensitiveValidationsMap(Map.of("test column", columnValidators));
+    JobTypeProcessor jobTypeProcessor =
+        new BulkUpdateSampleTypeProcessor("", "", collectionExercise);
+    jobTypeProcessor.setSampleOrSensitiveValidationsMap(Map.of("test column", columnValidators));
 
     JobRow jobRow = new JobRow();
     jobRow.setRowData(Map.of("fieldToUpdate", "test column", "newValue", ""));
     List<JobRow> jobRows = List.of(jobRow);
 
     when(jobTypeHelper.getJobTypeProcessor(job.getJobType(), collectionExercise))
-        .thenReturn(jobProcessor);
+        .thenReturn(jobTypeProcessor);
 
     when(jobRowRepository.findTop500ByJobAndJobRowStatus(job, JobRowStatus.STAGED))
         .thenReturn(jobRows);
@@ -255,15 +257,16 @@ class RowChunkValidatorTest {
     survey.setSampleValidationRules(columnValidators);
     collectionExercise.setSurvey(survey);
 
-    JobProcessor jobProcessor = new BulkUpdateSampleProcessor("", "", collectionExercise);
-    jobProcessor.setSampleOrSensitiveValidationsMap(Map.of("test column", columnValidators));
+    JobTypeProcessor jobTypeProcessor =
+        new BulkUpdateSampleTypeProcessor("", "", collectionExercise);
+    jobTypeProcessor.setSampleOrSensitiveValidationsMap(Map.of("test column", columnValidators));
 
     JobRow jobRow = new JobRow();
     jobRow.setRowData(Map.of("fieldToUpdate", "nonexistent column", "newValue", "test data"));
     List<JobRow> jobRows = List.of(jobRow);
 
     when(jobTypeHelper.getJobTypeProcessor(job.getJobType(), collectionExercise))
-        .thenReturn(jobProcessor);
+        .thenReturn(jobTypeProcessor);
 
     when(jobRowRepository.findTop500ByJobAndJobRowStatus(job, JobRowStatus.STAGED))
         .thenReturn(jobRows);
@@ -306,15 +309,16 @@ class RowChunkValidatorTest {
     survey.setSampleValidationRules(columnValidators);
     collectionExercise.setSurvey(survey);
 
-    JobProcessor jobProcessor = new BulkUpdateSensitiveSampleProcessor("", "", collectionExercise);
-    jobProcessor.setSampleOrSensitiveValidationsMap(Map.of("test column", columnValidators));
+    JobTypeProcessor jobTypeProcessor =
+        new BulkUpdateSensitiveSampleTypeProcessor("", "", collectionExercise);
+    jobTypeProcessor.setSampleOrSensitiveValidationsMap(Map.of("test column", columnValidators));
 
     JobRow jobRow = new JobRow();
     jobRow.setRowData(Map.of("fieldToUpdate", "test column", "newValue", "test data"));
     List<JobRow> jobRows = List.of(jobRow);
 
     when(jobTypeHelper.getJobTypeProcessor(job.getJobType(), collectionExercise))
-        .thenReturn(jobProcessor);
+        .thenReturn(jobTypeProcessor);
 
     when(jobRowRepository.findTop500ByJobAndJobRowStatus(job, JobRowStatus.STAGED))
         .thenReturn(jobRows);
@@ -356,15 +360,16 @@ class RowChunkValidatorTest {
     survey.setSampleValidationRules(columnValidators);
     collectionExercise.setSurvey(survey);
 
-    JobProcessor jobProcessor = new BulkUpdateSensitiveSampleProcessor("", "", collectionExercise);
-    jobProcessor.setSampleOrSensitiveValidationsMap(Map.of("test column", columnValidators));
+    JobTypeProcessor jobTypeProcessor =
+        new BulkUpdateSensitiveSampleTypeProcessor("", "", collectionExercise);
+    jobTypeProcessor.setSampleOrSensitiveValidationsMap(Map.of("test column", columnValidators));
 
     JobRow jobRow = new JobRow();
     jobRow.setRowData(Map.of("fieldToUpdate", "test column", "newValue", "123456789"));
     List<JobRow> jobRows = List.of(jobRow);
 
     when(jobTypeHelper.getJobTypeProcessor(job.getJobType(), collectionExercise))
-        .thenReturn(jobProcessor);
+        .thenReturn(jobTypeProcessor);
 
     when(jobRowRepository.findTop500ByJobAndJobRowStatus(job, JobRowStatus.STAGED))
         .thenReturn(jobRows);
@@ -408,16 +413,17 @@ class RowChunkValidatorTest {
     survey.setSampleValidationRules(columnValidators);
     collectionExercise.setSurvey(survey);
 
-    JobProcessor jobProcessor = new BulkUpdateSensitiveSampleProcessor("", "", collectionExercise);
-    jobProcessor.setSampleOrSensitiveValidationsMap(Map.of("test column", columnValidators));
-    jobProcessor.setBlankValueReturnNoValidators(true);
+    JobTypeProcessor jobTypeProcessor =
+        new BulkUpdateSensitiveSampleTypeProcessor("", "", collectionExercise);
+    jobTypeProcessor.setSampleOrSensitiveValidationsMap(Map.of("test column", columnValidators));
+    jobTypeProcessor.setBlankValueReturnNoValidators(true);
 
     JobRow jobRow = new JobRow();
     jobRow.setRowData(Map.of("fieldToUpdate", "test column", "newValue", ""));
     List<JobRow> jobRows = List.of(jobRow);
 
     when(jobTypeHelper.getJobTypeProcessor(job.getJobType(), collectionExercise))
-        .thenReturn(jobProcessor);
+        .thenReturn(jobTypeProcessor);
 
     when(jobRowRepository.findTop500ByJobAndJobRowStatus(job, JobRowStatus.STAGED))
         .thenReturn(jobRows);
@@ -459,15 +465,16 @@ class RowChunkValidatorTest {
     survey.setSampleValidationRules(columnValidators);
     collectionExercise.setSurvey(survey);
 
-    JobProcessor jobProcessor = new BulkUpdateSensitiveSampleProcessor("", "", collectionExercise);
-    jobProcessor.setSampleOrSensitiveValidationsMap(Map.of("test column", columnValidators));
+    JobTypeProcessor jobTypeProcessor =
+        new BulkUpdateSensitiveSampleTypeProcessor("", "", collectionExercise);
+    jobTypeProcessor.setSampleOrSensitiveValidationsMap(Map.of("test column", columnValidators));
 
     JobRow jobRow = new JobRow();
     jobRow.setRowData(Map.of("fieldToUpdate", "nonexistent column", "newValue", "test data"));
     List<JobRow> jobRows = List.of(jobRow);
 
     when(jobTypeHelper.getJobTypeProcessor(job.getJobType(), collectionExercise))
-        .thenReturn(jobProcessor);
+        .thenReturn(jobTypeProcessor);
 
     when(jobRowRepository.findTop500ByJobAndJobRowStatus(job, JobRowStatus.STAGED))
         .thenReturn(jobRows);

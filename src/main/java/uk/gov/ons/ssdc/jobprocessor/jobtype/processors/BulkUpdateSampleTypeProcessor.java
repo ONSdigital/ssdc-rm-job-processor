@@ -1,4 +1,4 @@
-package uk.gov.ons.ssdc.jobprocessor.utility;
+package uk.gov.ons.ssdc.jobprocessor.jobtype.processors;
 
 import static com.google.cloud.spring.pubsub.support.PubSubTopicUtils.toProjectTopicName;
 
@@ -11,11 +11,11 @@ import uk.gov.ons.ssdc.jobprocessor.exceptions.ValidatorFieldNotFoundException;
 import uk.gov.ons.ssdc.jobprocessor.transformer.BulkUpdateSampleTransformer;
 import uk.gov.ons.ssdc.jobprocessor.transformer.Transformer;
 
-public class BulkUpdateSampleProcessor extends JobProcessor {
+public class BulkUpdateSampleTypeProcessor extends JobTypeProcessor {
   private static final Transformer BULK_SAMPLE_UPDATE_TRANSFORMER =
       new BulkUpdateSampleTransformer();
 
-  public BulkUpdateSampleProcessor(
+  public BulkUpdateSampleTypeProcessor(
       String topic, String sharedPubsubProject, CollectionExercise collectionExercise) {
     setJobType(JobType.BULK_UPDATE_SAMPLE);
     setTransformer(BULK_SAMPLE_UPDATE_TRANSFORMER);

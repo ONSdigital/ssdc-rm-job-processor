@@ -4,6 +4,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.ons.ssdc.common.model.entity.CollectionExercise;
 import uk.gov.ons.ssdc.common.model.entity.JobType;
+import uk.gov.ons.ssdc.jobprocessor.jobtype.processors.BulkInvalidTypeProcessor;
+import uk.gov.ons.ssdc.jobprocessor.jobtype.processors.BulkRefusalTypeProcessor;
+import uk.gov.ons.ssdc.jobprocessor.jobtype.processors.BulkUpdateSampleTypeProcessor;
+import uk.gov.ons.ssdc.jobprocessor.jobtype.processors.BulkUpdateSensitiveSampleTypeProcessor;
+import uk.gov.ons.ssdc.jobprocessor.jobtype.processors.JobTypeProcessor;
+import uk.gov.ons.ssdc.jobprocessor.jobtype.processors.SampleLoadTypeProcessor;
 
 @Component
 public class JobTypeHelper {
@@ -27,7 +33,8 @@ public class JobTypeHelper {
   @Value("${queueconfig.update-sample-sensitive-topic}")
   private String updateSensitiveSampleTopic;
 
-  public JobProcessor getJobTypeProcessor(JobType jobType, CollectionExercise collectionExercise) {
+  public JobTypeProcessor getJobTypeProcessor(
+      JobType jobType, CollectionExercise collectionExercise) {
 
     if (collectionExercise == null) {
       throw new RuntimeException("CollectionExercise is null!");
@@ -35,20 +42,22 @@ public class JobTypeHelper {
 
     switch (jobType) {
       case SAMPLE:
-        return new SampleLoadProcessor(newCaseTopic, sharedPubsubProject, collectionExercise);
+        return new SampleLoadTypeProcessor(newCaseTopic, sharedPubsubProject, collectionExercise);
 
       case BULK_REFUSAL:
-        return new BulkRefusalProcessor(refusalEventTopic, sharedPubsubProject, collectionExercise);
+        return new BulkRefusalTypeProcessor(
+            refusalEventTopic, sharedPubsubProject, collectionExercise);
 
       case BULK_INVALID:
-        return new BulkInvalidProcessor(invalidCaseTopic, sharedPubsubProject, collectionExercise);
+        return new BulkInvalidTypeProcessor(
+            invalidCaseTopic, sharedPubsubProject, collectionExercise);
 
       case BULK_UPDATE_SAMPLE:
-        return new BulkUpdateSampleProcessor(
+        return new BulkUpdateSampleTypeProcessor(
             updateSampleTopic, sharedPubsubProject, collectionExercise);
 
       case BULK_UPDATE_SAMPLE_SENSITIVE:
-        return new BulkUpdateSensitiveSampleProcessor(
+        return new BulkUpdateSensitiveSampleTypeProcessor(
             updateSensitiveSampleTopic, sharedPubsubProject, collectionExercise);
 
       default:

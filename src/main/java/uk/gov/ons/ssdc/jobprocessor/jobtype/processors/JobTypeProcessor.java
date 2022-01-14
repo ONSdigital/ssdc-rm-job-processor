@@ -1,4 +1,4 @@
-package uk.gov.ons.ssdc.jobprocessor.utility;
+package uk.gov.ons.ssdc.jobprocessor.jobtype.processors;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -16,7 +16,7 @@ import uk.gov.ons.ssdc.jobprocessor.transformer.Transformer;
 import uk.gov.ons.ssdc.jobprocessor.validators.CaseExistsInCollectionExerciseRule;
 
 @Data
-public abstract class JobProcessor {
+public abstract class JobTypeProcessor {
   private JobType jobType;
   private Transformer transformer;
   private ColumnValidator[] columnValidators;
@@ -27,7 +27,8 @@ public abstract class JobProcessor {
   private boolean fixedColumnValidators;
   private boolean blankValueReturnNoValidators;
 
-  public JobProcessor() {};
+  public JobTypeProcessor() {}
+  ;
 
   public ColumnValidator[] getColumnValidators(JobRow jobRow)
       throws ValidatorFieldNotFoundException {

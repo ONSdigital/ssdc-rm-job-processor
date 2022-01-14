@@ -1,4 +1,4 @@
-package uk.gov.ons.ssdc.jobprocessor.utility;
+package uk.gov.ons.ssdc.jobprocessor.jobtype.processors;
 
 import static com.google.cloud.spring.pubsub.support.PubSubTopicUtils.toProjectTopicName;
 
@@ -8,10 +8,10 @@ import uk.gov.ons.ssdc.common.model.entity.UserGroupAuthorisedActivityType;
 import uk.gov.ons.ssdc.jobprocessor.transformer.NewCaseTransformer;
 import uk.gov.ons.ssdc.jobprocessor.transformer.Transformer;
 
-public class SampleLoadProcessor extends JobProcessor {
+public class SampleLoadTypeProcessor extends JobTypeProcessor {
   private static final Transformer SAMPLE_LOAD_TRANSFORMER = new NewCaseTransformer();
 
-  public SampleLoadProcessor(
+  public SampleLoadTypeProcessor(
       String topic, String sharedPubsubProject, CollectionExercise collectionExercise) {
     setJobType(JobType.SAMPLE);
     setTransformer(SAMPLE_LOAD_TRANSFORMER);
