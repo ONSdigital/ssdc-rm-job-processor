@@ -75,7 +75,7 @@ public abstract class JobTypeProcessor {
       throws ValidatorFieldNotFoundException {
     if (!sampleOrSensitiveValidationsMap.containsKey(columnName)) {
       throw new ValidatorFieldNotFoundException(
-          "fieldToUpdate column %s does not exist: " + columnName);
+          "fieldToUpdate column " + columnName + " does not exist");
     }
 
     return sampleOrSensitiveValidationsMap.get(columnName);

@@ -44,12 +44,9 @@ public class RowChunkValidator {
 
       try {
         columnValidators = jobTypeProcessor.getColumnValidators(jobRow);
-      } catch (ValidatorFieldNotFoundException exception) {
+      } catch (ValidatorFieldNotFoundException ex) {
         rowStatus = JobRowStatus.VALIDATED_ERROR;
-        rowValidationErrors.add(
-            String.format(
-                "fieldToUpdate column %s does not exist",
-                jobRow.getRowData().get("fieldToUpdate")));
+        rowValidationErrors.add(ex.getMessage());
         columnValidators = new ColumnValidator[0];
       }
 
