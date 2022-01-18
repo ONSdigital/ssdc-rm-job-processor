@@ -12,10 +12,10 @@ import org.springframework.util.concurrent.ListenableFuture;
 import uk.gov.ons.ssdc.common.model.entity.Job;
 import uk.gov.ons.ssdc.common.model.entity.JobRow;
 import uk.gov.ons.ssdc.common.model.entity.JobRowStatus;
+import uk.gov.ons.ssdc.jobprocessor.jobtype.processors.JobTypeProcessor;
 import uk.gov.ons.ssdc.jobprocessor.repository.JobRepository;
 import uk.gov.ons.ssdc.jobprocessor.repository.JobRowRepository;
 import uk.gov.ons.ssdc.jobprocessor.utility.JobTypeHelper;
-import uk.gov.ons.ssdc.jobprocessor.utility.JobTypeSettings;
 
 @Component
 public class RowChunkProcessor {
@@ -38,8 +38,8 @@ public class RowChunkProcessor {
 
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public void processChunk(Job job) {
-    JobTypeSettings jobTypeSettings =
-        jobTypeHelper.getJobTypeSettings(job.getJobType(), job.getCollectionExercise());
+    JobTypeProcessor jobTypeProcessor =
+        jobTypeHelper.getJobTypeProcessor(job.getJobType(), job.getCollectionExercise());
 
     List<JobRow> jobRows =
         jobRowRepository.findTop500ByJobAndJobRowStatus(job, JobRowStatus.VALIDATED_OK);
@@ -48,14 +48,14 @@ public class RowChunkProcessor {
       try {
         ListenableFuture<String> future =
             pubSubTemplate.publish(
-                jobTypeSettings.getTopic(),
-                jobTypeSettings
+                jobTypeProcessor.getTopic(),
+                jobTypeProcessor
                     .getTransformer()
                     .transformRow(
                         job,
                         jobRow,
-                        jobTypeSettings.getColumnValidators(),
-                        jobTypeSettings.getTopic()));
+                        jobTypeProcessor.getColumnValidators(),
+                        jobTypeProcessor.getTopic()));
 
         // Wait for up to 30 seconds to confirm that message was published
         future.get(30, TimeUnit.SECONDS);

@@ -21,13 +21,15 @@ import uk.gov.ons.ssdc.common.model.entity.Job;
 import uk.gov.ons.ssdc.common.model.entity.JobRow;
 import uk.gov.ons.ssdc.common.model.entity.JobRowStatus;
 import uk.gov.ons.ssdc.common.model.entity.JobType;
+import uk.gov.ons.ssdc.common.model.entity.Survey;
 import uk.gov.ons.ssdc.common.validation.ColumnValidator;
 import uk.gov.ons.ssdc.common.validation.Rule;
+import uk.gov.ons.ssdc.jobprocessor.jobtype.processors.JobTypeProcessor;
+import uk.gov.ons.ssdc.jobprocessor.jobtype.processors.SampleLoadTypeProcessor;
 import uk.gov.ons.ssdc.jobprocessor.repository.JobRepository;
 import uk.gov.ons.ssdc.jobprocessor.repository.JobRowRepository;
 import uk.gov.ons.ssdc.jobprocessor.transformer.Transformer;
 import uk.gov.ons.ssdc.jobprocessor.utility.JobTypeHelper;
-import uk.gov.ons.ssdc.jobprocessor.utility.JobTypeSettings;
 
 @ExtendWith(MockitoExtension.class)
 class RowChunkProcessorTest {
@@ -50,33 +52,36 @@ class RowChunkProcessorTest {
     ColumnValidator[] columnValidators =
         new ColumnValidator[] {new ColumnValidator("test column", false, new Rule[0])};
 
-    JobTypeSettings jobTypeSettings = new JobTypeSettings(JobType.SAMPLE);
-    jobTypeSettings.setTopic("Test topic");
-    jobTypeSettings.setTransformer(transformer);
-    jobTypeSettings.setColumnValidators(columnValidators);
+    Survey survey = new Survey();
+    survey.setSampleValidationRules(columnValidators);
+    collectionExercise.setSurvey(survey);
+
+    JobTypeProcessor jobTypeProcessor =
+        new SampleLoadTypeProcessor("Test topic", "", collectionExercise);
+    jobTypeProcessor.setTransformer(transformer);
 
     JobRow jobRow = new JobRow();
     List<JobRow> jobRows = List.of(jobRow);
 
-    when(jobTypeHelper.getJobTypeSettings(job.getJobType(), collectionExercise))
-        .thenReturn(jobTypeSettings);
+    when(jobTypeHelper.getJobTypeProcessor(job.getJobType(), collectionExercise))
+        .thenReturn(jobTypeProcessor);
 
     when(jobRowRepository.findTop500ByJobAndJobRowStatus(job, JobRowStatus.VALIDATED_OK))
         .thenReturn(jobRows);
 
     Object messageToPublish = new Object();
-    when(transformer.transformRow(job, jobRow, columnValidators, jobTypeSettings.getTopic()))
+    when(transformer.transformRow(job, jobRow, columnValidators, jobTypeProcessor.getTopic()))
         .thenReturn(messageToPublish);
 
     ListenableFuture<String> listenableFuture = mock(ListenableFuture.class);
-    when(pubSubTemplate.publish(jobTypeSettings.getTopic(), messageToPublish))
+    when(pubSubTemplate.publish(jobTypeProcessor.getTopic(), messageToPublish))
         .thenReturn(listenableFuture);
 
     // When
     underTest.processChunk(job);
 
     // Then
-    verify(pubSubTemplate).publish(jobTypeSettings.getTopic(), messageToPublish);
+    verify(pubSubTemplate).publish(jobTypeProcessor.getTopic(), messageToPublish);
 
     ArgumentCaptor<Job> jobArgumentCaptor = ArgumentCaptor.forClass(Job.class);
     verify(jobRepository).save(jobArgumentCaptor.capture());
@@ -104,33 +109,36 @@ class RowChunkProcessorTest {
     ColumnValidator[] columnValidators =
         new ColumnValidator[] {new ColumnValidator("test column", false, new Rule[0])};
 
-    JobTypeSettings jobTypeSettings = new JobTypeSettings(JobType.SAMPLE);
-    jobTypeSettings.setTopic("Test topic");
-    jobTypeSettings.setTransformer(transformer);
-    jobTypeSettings.setColumnValidators(columnValidators);
+    Survey survey = new Survey();
+    survey.setSampleValidationRules(columnValidators);
+    collectionExercise.setSurvey(survey);
+
+    JobTypeProcessor jobTypeProcessor =
+        new SampleLoadTypeProcessor("Test topic", "", collectionExercise);
+    jobTypeProcessor.setTransformer(transformer);
 
     JobRow jobRow = new JobRow();
     jobRow.setJobRowStatus(JobRowStatus.VALIDATED_OK);
     List<JobRow> jobRows = List.of(jobRow);
 
-    when(jobTypeHelper.getJobTypeSettings(job.getJobType(), collectionExercise))
-        .thenReturn(jobTypeSettings);
+    when(jobTypeHelper.getJobTypeProcessor(job.getJobType(), collectionExercise))
+        .thenReturn(jobTypeProcessor);
 
     when(jobRowRepository.findTop500ByJobAndJobRowStatus(job, JobRowStatus.VALIDATED_OK))
         .thenReturn(jobRows);
 
     Object messageToPublish = new Object();
-    when(transformer.transformRow(job, jobRow, columnValidators, jobTypeSettings.getTopic()))
+    when(transformer.transformRow(job, jobRow, columnValidators, jobTypeProcessor.getTopic()))
         .thenReturn(messageToPublish);
 
-    when(pubSubTemplate.publish(jobTypeSettings.getTopic(), messageToPublish))
+    when(pubSubTemplate.publish(jobTypeProcessor.getTopic(), messageToPublish))
         .thenThrow(new RuntimeException());
 
     // When
     underTest.processChunk(job);
 
     // Then
-    verify(pubSubTemplate).publish(jobTypeSettings.getTopic(), messageToPublish);
+    verify(pubSubTemplate).publish(jobTypeProcessor.getTopic(), messageToPublish);
 
     ArgumentCaptor<Job> jobArgumentCaptor = ArgumentCaptor.forClass(Job.class);
     verify(jobRepository).save(jobArgumentCaptor.capture());
@@ -158,22 +166,25 @@ class RowChunkProcessorTest {
     ColumnValidator[] columnValidators =
         new ColumnValidator[] {new ColumnValidator("test column", false, new Rule[0])};
 
-    JobTypeSettings jobTypeSettings = new JobTypeSettings(JobType.SAMPLE);
-    jobTypeSettings.setTopic("Test topic");
-    jobTypeSettings.setTransformer(transformer);
-    jobTypeSettings.setColumnValidators(columnValidators);
+    Survey survey = new Survey();
+    survey.setSampleValidationRules(columnValidators);
+    collectionExercise.setSurvey(survey);
+
+    JobTypeProcessor jobTypeProcessor =
+        new SampleLoadTypeProcessor("Test topic", "", collectionExercise);
+    jobTypeProcessor.setTransformer(transformer);
 
     JobRow jobRow = new JobRow();
     jobRow.setJobRowStatus(JobRowStatus.VALIDATED_OK);
     List<JobRow> jobRows = List.of(jobRow);
 
-    when(jobTypeHelper.getJobTypeSettings(job.getJobType(), collectionExercise))
-        .thenReturn(jobTypeSettings);
+    when(jobTypeHelper.getJobTypeProcessor(job.getJobType(), collectionExercise))
+        .thenReturn(jobTypeProcessor);
 
     when(jobRowRepository.findTop500ByJobAndJobRowStatus(job, JobRowStatus.VALIDATED_OK))
         .thenReturn(jobRows);
 
-    when(transformer.transformRow(job, jobRow, columnValidators, jobTypeSettings.getTopic()))
+    when(transformer.transformRow(job, jobRow, columnValidators, jobTypeProcessor.getTopic()))
         .thenThrow(new RuntimeException());
 
     // When
