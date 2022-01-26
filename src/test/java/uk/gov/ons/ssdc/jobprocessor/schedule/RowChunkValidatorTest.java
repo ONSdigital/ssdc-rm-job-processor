@@ -416,7 +416,6 @@ class RowChunkValidatorTest {
     JobTypeProcessor jobTypeProcessor =
         new BulkUpdateSensitiveSampleTypeProcessor("", "", collectionExercise);
     jobTypeProcessor.setSampleOrSensitiveValidationsMap(Map.of("test column", columnValidators));
-    jobTypeProcessor.setBlankValueReturnNoValidators(true);
 
     JobRow jobRow = new JobRow();
     jobRow.setRowData(Map.of("fieldToUpdate", "test column", "newValue", ""));

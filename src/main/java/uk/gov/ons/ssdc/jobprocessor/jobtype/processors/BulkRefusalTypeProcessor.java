@@ -8,6 +8,7 @@ import uk.gov.ons.ssdc.common.model.entity.JobType;
 import uk.gov.ons.ssdc.common.model.entity.UserGroupAuthorisedActivityType;
 import uk.gov.ons.ssdc.common.validation.ColumnValidator;
 import uk.gov.ons.ssdc.common.validation.InSetRule;
+import uk.gov.ons.ssdc.common.validation.MandatoryRule;
 import uk.gov.ons.ssdc.common.validation.Rule;
 import uk.gov.ons.ssdc.jobprocessor.model.dto.messaging.RefusalTypeDTO;
 import uk.gov.ons.ssdc.jobprocessor.transformer.BulkRefusalTransformer;
@@ -34,7 +35,7 @@ public class BulkRefusalTypeProcessor extends JobTypeProcessor {
 
     String[] refusalTypes =
         EnumSet.allOf(RefusalTypeDTO.class).stream().map(Enum::toString).toArray(String[]::new);
-    Rule[] refusalSetRules = {new InSetRule(refusalTypes)};
+    Rule[] refusalSetRules = {new InSetRule(refusalTypes), new MandatoryRule()};
 
     ColumnValidator refusalTypeValidator =
         new ColumnValidator("refusalType", false, refusalSetRules);
