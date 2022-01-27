@@ -24,8 +24,6 @@ public abstract class JobTypeProcessor {
   private UserGroupAuthorisedActivityType fileLoadPermission;
   private UserGroupAuthorisedActivityType fileViewProgressPermission;
   private Map<String, ColumnValidator[]> sampleOrSensitiveValidationsMap;
-  private boolean fixedColumnValidators;
-  private boolean blankValueReturnNoValidators;
 
   public JobTypeProcessor() {}
   ;
