@@ -224,7 +224,7 @@
             </goals>
             <phase>package</phase>
             <configuration>
-              <repository>eu.gcr.io/ssdc-rm-ci/rm/${project.artifactId}</repository>
+              <repository>europe-west2-docker.pkg.dev/ssdc-rm-ci/docker/${project.artifactId}</repository>
               <buildArgs>
                 <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
               </buildArgs>

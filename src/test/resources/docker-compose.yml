@@ -2,7 +2,7 @@ version: '2.1'
 services:
   postgres-job-processor-it:
     container_name: postgres-job-processor-it
-    image: eu.gcr.io/ssdc-rm-ci/rm/ssdc-rm-dev-common-postgres:latest
+    image: europe-west2-docker.pkg.dev/ssdc-rm-ci/docker/ssdc-rm-dev-common-postgres:latest
     command: ["-c", "shared_buffers=256MB", "-c", "max_connections=500"]
     ports:
       - "16445:5432"
@@ -14,13 +14,13 @@ services:
 
   pubsub-emulator-job-processor-it:
     container_name: pubsub-emulator-job-processor-it
-    image: eu.gcr.io/ssdc-rm-ci/rm/gcloud-pubsub-emulator:latest
+    image: europe-west2-docker.pkg.dev/ssdc-rm-ci/docker/gcloud-pubsub-emulator:latest
     ports:
       - "18545:8538"
 
   setup-pubsub-emulator-job-processor-it:
     container_name: setup-pubsub-emulator-job-processor-it
-    image: eu.gcr.io/ssdc-rm-ci/rm/gcloud-pubsub-emulator:latest
+    image: europe-west2-docker.pkg.dev/ssdc-rm-ci/docker/gcloud-pubsub-emulator:latest
     environment:
       - PUBSUB_SETUP_HOST=pubsub-emulator-job-processor-it:8538
     volumes:

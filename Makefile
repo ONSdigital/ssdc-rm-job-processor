@@ -14,4 +14,4 @@ test:
 	mvn clean verify jacoco:report
 
 docker-build:
-	docker build . -t eu.gcr.io/ssdc-rm-ci/rm/ssdc-rm-job-processor:latest
+	docker build . -t europe-west2-docker.pkg.dev/ssdc-rm-ci/docker/ssdc-rm-job-processor:latest
