@@ -12,7 +12,7 @@ env:
 
 before_install:
   - mvn fmt:check
-  - docker login -u "${DOCKER_GCP_USERNAME}" -p "${DOCKER_GCP_PASSWORD}" "${DOCKER_GCP_REGISTRY}";
+  - docker login -u "${DOCKER_GCP_USERNAME}" -p "${DOCKER_GCP_PASSWORD}" https://europe-west2-docker.pkg.dev;
   - docker login -u "${DOCKERHUB_USERNAME}" -p "${DOCKERHUB_PASSWORD}";
   - docker network create ssdcrmdockerdev_default
   - echo "$DOCKER_GCP_PASSWORD" > ~/google-service-account-key.json
