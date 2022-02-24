@@ -165,6 +165,7 @@
           <failurePriority>3</failurePriority>
           <failOnViolation>true</failOnViolation>
           <verbose>true</verbose>
+          <linkXRef>false</linkXRef>
           <rulesets>
             <ruleset>/category/java/bestpractices.xml</ruleset>
             <ruleset>/category/java/security.xml</ruleset>
