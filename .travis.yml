@@ -11,7 +11,7 @@ env:
   - IMAGE_NAME="$DOCKER_GCP_LOCATION/ssdc-rm-job-processor"
 
 before_install:
-  - mvn fmt:check
+  - mvn fmt:check pmd:check
   - docker login -u "${DOCKER_GCP_USERNAME}" -p "${DOCKER_GCP_PASSWORD}" https://europe-west2-docker.pkg.dev;
   - docker login -u "${DOCKERHUB_USERNAME}" -p "${DOCKERHUB_PASSWORD}";
   - docker network create ssdcrmdockerdev_default

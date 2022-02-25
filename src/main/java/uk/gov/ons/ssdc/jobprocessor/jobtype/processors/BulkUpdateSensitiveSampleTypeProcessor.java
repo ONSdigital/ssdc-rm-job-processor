@@ -30,6 +30,7 @@ public class BulkUpdateSensitiveSampleTypeProcessor extends JobTypeProcessor {
         UserGroupAuthorisedActivityType.VIEW_BULK_UPDATE_SAMPLE_SENSITIVE_PROGRESS);
   }
 
+  @Override
   public ColumnValidator[] getColumnValidators(JobRow jobRow)
       throws ValidatorFieldNotFoundException {
 

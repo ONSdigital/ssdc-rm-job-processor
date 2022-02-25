@@ -28,6 +28,7 @@ public class BulkUpdateSampleTypeProcessor extends JobTypeProcessor {
     setFileViewProgressPermission(UserGroupAuthorisedActivityType.VIEW_BULK_UPDATE_SAMPLE_PROGRESS);
   }
 
+  @Override
   public ColumnValidator[] getColumnValidators(JobRow jobRow)
       throws ValidatorFieldNotFoundException {
     String fieldToUpdate = jobRow.getRowData().get("fieldToUpdate");
