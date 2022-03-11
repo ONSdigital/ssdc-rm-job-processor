@@ -156,7 +156,8 @@ class RowChunkValidatorTest {
 
     JobTypeProcessor jobTypeProcessor =
         new BulkUpdateSampleTypeProcessor("", "", collectionExercise);
-    jobTypeProcessor.setSampleOrSensitiveValidationsMap(Map.of("test column", columnValidators));
+    //    jobTypeProcessor.setSampleOrSensitiveValidationsMap(Map.of("test column",
+    // columnValidators));
 
     JobRow jobRow = new JobRow();
     jobRow.setRowData(Map.of("fieldToUpdate", "test column", "newValue", "test data"));
@@ -207,7 +208,8 @@ class RowChunkValidatorTest {
 
     JobTypeProcessor jobTypeProcessor =
         new BulkUpdateSampleTypeProcessor("", "", collectionExercise);
-    jobTypeProcessor.setSampleOrSensitiveValidationsMap(Map.of("test column", columnValidators));
+    //    jobTypeProcessor.setSampleOrSensitiveValidationsMap(Map.of("test column",
+    // columnValidators));
 
     JobRow jobRow = new JobRow();
     jobRow.setRowData(Map.of("fieldToUpdate", "test column", "newValue", ""));
@@ -259,7 +261,8 @@ class RowChunkValidatorTest {
 
     JobTypeProcessor jobTypeProcessor =
         new BulkUpdateSampleTypeProcessor("", "", collectionExercise);
-    jobTypeProcessor.setSampleOrSensitiveValidationsMap(Map.of("test column", columnValidators));
+    //    jobTypeProcessor.setSampleOrSensitiveValidationsMap(Map.of("test column",
+    // columnValidators));
 
     JobRow jobRow = new JobRow();
     jobRow.setRowData(Map.of("fieldToUpdate", "nonexistent column", "newValue", "test data"));
@@ -311,7 +314,8 @@ class RowChunkValidatorTest {
 
     JobTypeProcessor jobTypeProcessor =
         new BulkUpdateSensitiveSampleTypeProcessor("", "", collectionExercise);
-    jobTypeProcessor.setSampleOrSensitiveValidationsMap(Map.of("test column", columnValidators));
+    //    jobTypeProcessor.setSampleOrSensitiveValidationsMap(Map.of("test column",
+    // columnValidators));
 
     JobRow jobRow = new JobRow();
     jobRow.setRowData(Map.of("fieldToUpdate", "test column", "newValue", "test data"));
@@ -362,7 +366,8 @@ class RowChunkValidatorTest {
 
     JobTypeProcessor jobTypeProcessor =
         new BulkUpdateSensitiveSampleTypeProcessor("", "", collectionExercise);
-    jobTypeProcessor.setSampleOrSensitiveValidationsMap(Map.of("test column", columnValidators));
+    //    jobTypeProcessor.setSampleOrSensitiveValidationsMap(Map.of("test column",
+    // columnValidators));
 
     JobRow jobRow = new JobRow();
     jobRow.setRowData(Map.of("fieldToUpdate", "test column", "newValue", "123456789"));
@@ -415,7 +420,8 @@ class RowChunkValidatorTest {
 
     JobTypeProcessor jobTypeProcessor =
         new BulkUpdateSensitiveSampleTypeProcessor("", "", collectionExercise);
-    jobTypeProcessor.setSampleOrSensitiveValidationsMap(Map.of("test column", columnValidators));
+    //    jobTypeProcessor.setSampleOrSensitiveValidationsMap(Map.of("test column",
+    // columnValidators));
 
     JobRow jobRow = new JobRow();
     jobRow.setRowData(Map.of("fieldToUpdate", "test column", "newValue", ""));
@@ -466,7 +472,8 @@ class RowChunkValidatorTest {
 
     JobTypeProcessor jobTypeProcessor =
         new BulkUpdateSensitiveSampleTypeProcessor("", "", collectionExercise);
-    jobTypeProcessor.setSampleOrSensitiveValidationsMap(Map.of("test column", columnValidators));
+    //    jobTypeProcessor.setSampleOrSensitiveValidationsMap(Map.of("test column",
+    // columnValidators));
 
     JobRow jobRow = new JobRow();
     jobRow.setRowData(Map.of("fieldToUpdate", "nonexistent column", "newValue", "test data"));

@@ -49,8 +49,7 @@ public class JobTypeHelper {
             refusalEventTopic, sharedPubsubProject, collectionExercise);
 
       case BULK_INVALID:
-        return new BulkInvalidTypeProcessor(
-            invalidCaseTopic, sharedPubsubProject, collectionExercise);
+        return new BulkInvalidTypeProcessor(invalidCaseTopic, sharedPubsubProject);
 
       case BULK_UPDATE_SAMPLE:
         return new BulkUpdateSampleTypeProcessor(

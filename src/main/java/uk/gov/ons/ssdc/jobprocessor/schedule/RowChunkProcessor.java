@@ -54,7 +54,7 @@ public class RowChunkProcessor {
                     .transformRow(
                         job,
                         jobRow,
-                        jobTypeProcessor.getColumnValidators(),
+                        jobTypeProcessor.getColumnValidators(jobRow),
                         jobTypeProcessor.getTopic()));
 
         // Wait for up to 30 seconds to confirm that message was published
