@@ -3,11 +3,13 @@ package uk.gov.ons.ssdc.jobprocessor.jobtype.processors;
 import static com.google.cloud.spring.pubsub.support.PubSubTopicUtils.toProjectTopicName;
 
 import uk.gov.ons.ssdc.common.model.entity.CollectionExercise;
+import uk.gov.ons.ssdc.common.model.entity.JobRow;
 import uk.gov.ons.ssdc.common.model.entity.JobType;
 import uk.gov.ons.ssdc.common.model.entity.UserGroupAuthorisedActivityType;
 import uk.gov.ons.ssdc.common.validation.ColumnValidator;
 import uk.gov.ons.ssdc.common.validation.MandatoryRule;
 import uk.gov.ons.ssdc.common.validation.Rule;
+import uk.gov.ons.ssdc.jobprocessor.exceptions.ValidatorFieldNotFoundException;
 import uk.gov.ons.ssdc.jobprocessor.transformer.BulkInvalidCaseTransformer;
 import uk.gov.ons.ssdc.jobprocessor.transformer.Transformer;
 import uk.gov.ons.ssdc.jobprocessor.validators.CaseExistsInCollectionExerciseRule;
@@ -34,5 +36,11 @@ public class BulkInvalidTypeProcessor extends JobTypeProcessor {
     ColumnValidator reasonRuleValidator = new ColumnValidator("reason", false, reasonRule);
 
     return new ColumnValidator[] {caseExistsValidator, reasonRuleValidator};
+  }
+
+  @Override
+  public ColumnValidator[] getColumnValidators(JobRow jobRow)
+      throws ValidatorFieldNotFoundException {
+    return columnValidators.clone();
   }
 }

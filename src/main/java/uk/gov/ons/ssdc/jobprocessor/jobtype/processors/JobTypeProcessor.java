@@ -19,19 +19,14 @@ import uk.gov.ons.ssdc.jobprocessor.validators.CaseExistsInCollectionExerciseRul
 public abstract class JobTypeProcessor {
   private JobType jobType;
   private Transformer transformer;
-  private ColumnValidator[] columnValidators;
+  protected ColumnValidator[] columnValidators;
   private String topic;
   private UserGroupAuthorisedActivityType fileLoadPermission;
   private UserGroupAuthorisedActivityType fileViewProgressPermission;
   private Map<String, ColumnValidator[]> sampleOrSensitiveValidationsMap;
 
-  public JobTypeProcessor() {}
-  ;
-
-  public ColumnValidator[] getColumnValidators(JobRow jobRow)
-      throws ValidatorFieldNotFoundException {
-    return columnValidators;
-  }
+  public abstract ColumnValidator[] getColumnValidators(JobRow jobRow)
+      throws ValidatorFieldNotFoundException;
 
   public void setSampleAndSensitiveDataColumnMaps(
       ColumnValidator[] columnValidators, CollectionExercise collectionExercise) {
