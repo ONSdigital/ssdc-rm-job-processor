@@ -4,12 +4,14 @@ import static com.google.cloud.spring.pubsub.support.PubSubTopicUtils.toProjectT
 
 import java.util.EnumSet;
 import uk.gov.ons.ssdc.common.model.entity.CollectionExercise;
+import uk.gov.ons.ssdc.common.model.entity.JobRow;
 import uk.gov.ons.ssdc.common.model.entity.JobType;
 import uk.gov.ons.ssdc.common.model.entity.UserGroupAuthorisedActivityType;
 import uk.gov.ons.ssdc.common.validation.ColumnValidator;
 import uk.gov.ons.ssdc.common.validation.InSetRule;
 import uk.gov.ons.ssdc.common.validation.MandatoryRule;
 import uk.gov.ons.ssdc.common.validation.Rule;
+import uk.gov.ons.ssdc.jobprocessor.exceptions.ValidatorFieldNotFoundException;
 import uk.gov.ons.ssdc.jobprocessor.model.dto.messaging.RefusalTypeDTO;
 import uk.gov.ons.ssdc.jobprocessor.transformer.BulkRefusalTransformer;
 import uk.gov.ons.ssdc.jobprocessor.transformer.Transformer;
@@ -41,5 +43,11 @@ public class BulkRefusalTypeProcessor extends JobTypeProcessor {
         new ColumnValidator("refusalType", false, refusalSetRules);
 
     return new ColumnValidator[] {caseExistsValidator, refusalTypeValidator};
+  }
+
+  @Override
+  public ColumnValidator[] getColumnValidators(JobRow jobRow)
+      throws ValidatorFieldNotFoundException {
+    return columnValidators.clone();
   }
 }
