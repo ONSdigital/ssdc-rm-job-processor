@@ -238,25 +238,6 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>com.spotify</groupId>
-        <artifactId>dockerfile-maven-plugin</artifactId>
-        <version>1.4.10</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>build</goal>
-            </goals>
-            <phase>package</phase>
-            <configuration>
-              <repository>europe-west2-docker.pkg.dev/ssdc-rm-ci/docker/${project.artifactId}</repository>
-              <buildArgs>
-                <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
-              </buildArgs>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>com.coveo</groupId>
         <artifactId>fmt-maven-plugin</artifactId>
         <version>2.13</version>
