@@ -55,12 +55,12 @@
     <dependency>
       <groupId>uk.gov.ons.ssdc</groupId>
       <artifactId>ssdc-rm-common-entity-model</artifactId>
-      <version>4.16.3-SNAPSHOT</version>
+      <version>4.16.4</version>
     </dependency>
     <dependency>
       <groupId>uk.gov.ons.ssdc</groupId>
       <artifactId>ssdc-shared-sample-validation</artifactId>
-      <version>1.6.0-SNAPSHOT</version>
+      <version>1.7.0</version>
     </dependency>
 
     <dependency>
