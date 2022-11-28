@@ -4,12 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.ons.ssdc.common.model.entity.CollectionExercise;
 import uk.gov.ons.ssdc.common.model.entity.JobType;
-import uk.gov.ons.ssdc.jobprocessor.jobtype.processors.BulkInvalidTypeProcessor;
-import uk.gov.ons.ssdc.jobprocessor.jobtype.processors.BulkRefusalTypeProcessor;
-import uk.gov.ons.ssdc.jobprocessor.jobtype.processors.BulkUpdateSampleTypeProcessor;
-import uk.gov.ons.ssdc.jobprocessor.jobtype.processors.BulkUpdateSensitiveSampleTypeProcessor;
-import uk.gov.ons.ssdc.jobprocessor.jobtype.processors.JobTypeProcessor;
-import uk.gov.ons.ssdc.jobprocessor.jobtype.processors.SampleLoadTypeProcessor;
+import uk.gov.ons.ssdc.jobprocessor.jobtype.processors.*;
 
 @Component
 public class JobTypeHelper {
@@ -59,6 +54,10 @@ public class JobTypeHelper {
       case BULK_UPDATE_SAMPLE_SENSITIVE:
         return new BulkUpdateSensitiveSampleTypeProcessor(
             updateSensitiveSampleTopic, sharedPubsubProject, collectionExercise);
+      case BULK_PHM_UPDATE_SAMPLE:
+        return new BulkPHMUpdateSampleTypeProcessor(
+                updateSampleTopic, sharedPubsubProject, collectionExercise
+        );
 
       default:
         // This code should be unreachable, providing we have a case for every JobType
