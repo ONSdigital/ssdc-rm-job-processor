@@ -1,21 +1,15 @@
 package uk.gov.ons.ssdc.jobprocessor.jobtype.processors;
 
+import static com.google.cloud.spring.pubsub.support.PubSubTopicUtils.toProjectTopicName;
+
 import uk.gov.ons.ssdc.common.model.entity.CollectionExercise;
 import uk.gov.ons.ssdc.common.model.entity.JobRow;
 import uk.gov.ons.ssdc.common.model.entity.JobType;
 import uk.gov.ons.ssdc.common.model.entity.UserGroupAuthorisedActivityType;
 import uk.gov.ons.ssdc.common.validation.*;
-import uk.gov.ons.ssdc.jobprocessor.exceptions.ValidatorFieldNotFoundException;
-import uk.gov.ons.ssdc.jobprocessor.model.dto.messaging.RefusalTypeDTO;
 import uk.gov.ons.ssdc.jobprocessor.transformer.BulkPHMUpdateSampleTransformer;
-import uk.gov.ons.ssdc.jobprocessor.transformer.BulkUpdateSampleTransformer;
 import uk.gov.ons.ssdc.jobprocessor.transformer.Transformer;
 import uk.gov.ons.ssdc.jobprocessor.validators.CaseExistsFromParticipantIdRule;
-import uk.gov.ons.ssdc.jobprocessor.validators.CaseExistsInCollectionExerciseRule;
-
-import java.util.EnumSet;
-
-import static com.google.cloud.spring.pubsub.support.PubSubTopicUtils.toProjectTopicName;
 
 public class BulkPHMUpdateSampleTypeProcessor extends JobTypeProcessor {
   private static final Transformer BULK_PHM_SAMPLE_UPDATE_TRANSFORMER =
@@ -31,37 +25,75 @@ public class BulkPHMUpdateSampleTypeProcessor extends JobTypeProcessor {
         collectionExercise.getSurvey().getSampleValidationRules(), collectionExercise);
     setTopic(toProjectTopicName(topic, sharedPubsubProject).toString());
     setFileLoadPermission(UserGroupAuthorisedActivityType.LOAD_BULK_PHM_UPDATE_SAMPLE);
-    setFileViewProgressPermission(UserGroupAuthorisedActivityType.VIEW_BULK_PHM_UPDATE_SAMPLE_PROGRESS);
+    setFileViewProgressPermission(
+        UserGroupAuthorisedActivityType.VIEW_BULK_PHM_UPDATE_SAMPLE_PROGRESS);
   }
 
-  private ColumnValidator[] getBulkPHMUpdateSameValidationRules(CollectionExercise collectionExercise) {
-    Rule[] participantRules = {new NumericRule(), new MandatoryRule(), new CaseExistsFromParticipantIdRule(collectionExercise)};
-    ColumnValidator participantValidator = new ColumnValidator("PARTICIPANT_ID", false, participantRules);
+  private ColumnValidator[] getBulkPHMUpdateSameValidationRules(
+      CollectionExercise collectionExercise) {
 
-    ColumnValidator swabTestBarcodeValidator = new ColumnValidator("SWAB_TEST_BARCODE", false, new Rule[0]);
-    ColumnValidator bloodTestBarcodeValidator =  new ColumnValidator("BLOOD_TEST_BARCODE", false, new Rule[0]);
-    ColumnValidator noTestBarcodeValidator = new ColumnValidator("NO_TEST_BARCODE", false, new Rule[0]);
+    // PARTICIPANT_ID
+    Rule[] participantRules = {
+      new LengthRule(16),
+      new MandatoryRule(),
+      new CaseExistsFromParticipantIdRule(collectionExercise)
+    };
 
-    // Needs inset for values. Can get elsewhere
-    String[] cohortTypeSet = {"Q","S","B"};
+    ColumnValidator participantIdValidator =
+        new ColumnValidator("PARTICIPANT_ID", false, participantRules);
+
+    // SWAB_TEST_BARCODE
+    ColumnValidator swabTestBarcodeValidator =
+        new ColumnValidator("SWAB_TEST_BARCODE", false, new Rule[0]);
+
+    // BLOOD_TEST_BARCODE
+    ColumnValidator bloodTestBarcodeValidator =
+        new ColumnValidator("BLOOD_TEST_BARCODE", false, new Rule[0]);
+
+    // NO_TEST_BARCODE
+    ColumnValidator noTestBarcodeValidator =
+        new ColumnValidator("NO_TEST_BARCODE", false, new Rule[0]);
+
+    // COHORT_TYPE
+    String[] cohortTypeSet = {"Q", "S", "B"};
     Rule[] cohortTypeRules = {new InSetRule(cohortTypeSet)};
+    ColumnValidator cohortTypeValidator =
+        new ColumnValidator("COHORT_TYPE", false, cohortTypeRules);
 
-    ColumnValidator cohortTypeValidator = new ColumnValidator("COHORT_TYPE", false, cohortTypeRules);
+    // BATCH_OPEN_DATE
+    Rule[] batchOpenRules = {new MandatoryRule()};
+    ColumnValidator batchOpenDateValidator =
+        new ColumnValidator("BATCH_OPEN_DATE", false, batchOpenRules);
 
-    Rule[] batchOpenRules = { new MandatoryRule()};
-    ColumnValidator batchOpenDateValidator = new ColumnValidator("BATCH_OPEN_DATE", false, batchOpenRules);
-
+    // BATCH_CLOSE_DATE
     Rule[] batchCloseRules = {new MandatoryRule()};
-    ColumnValidator batchCloseDateValidator = new ColumnValidator("BATCH_CLOSE_DATE", false, batchCloseRules);
+    ColumnValidator batchCloseDateValidator =
+        new ColumnValidator("BATCH_CLOSE_DATE", false, batchCloseRules);
 
+    // BATCH_NUMBER
     Rule[] batchNumberRules = {new NumericRule(), new MandatoryRule()};
-    ColumnValidator batchNumberValidator = new ColumnValidator("BATCH_NUMBER", false, batchNumberRules);
-    String[] longitudinalQuestionsSet = {"S","L"};
-    Rule[] longitudinalQuestionsRules = {new MandatoryRule(), new InSetRule(longitudinalQuestionsSet)};
-    ColumnValidator longitudinalQuestionsValidator = new ColumnValidator("LONGITUDINAL_QUESTIONS", false, longitudinalQuestionsRules);
+    ColumnValidator batchNumberValidator =
+        new ColumnValidator("BATCH_NUMBER", false, batchNumberRules);
 
-    return new ColumnValidator[] {participantValidator, swabTestBarcodeValidator, bloodTestBarcodeValidator, noTestBarcodeValidator, cohortTypeValidator,
-            batchOpenDateValidator, batchCloseDateValidator, batchNumberValidator, longitudinalQuestionsValidator};
+    // LONGITUDINAL_QUESTIONS
+    String[] longitudinalQuestionsSet = {"T", "F"};
+    Rule[] longitudinalQuestionsRules = {
+      new MandatoryRule(), new InSetRule(longitudinalQuestionsSet), new LengthRule(1)
+    };
+    ColumnValidator longitudinalQuestionsValidator =
+        new ColumnValidator("LONGITUDINAL_QUESTIONS", false, longitudinalQuestionsRules);
+
+    return new ColumnValidator[] {
+      participantIdValidator,
+      swabTestBarcodeValidator,
+      bloodTestBarcodeValidator,
+      noTestBarcodeValidator,
+      cohortTypeValidator,
+      batchOpenDateValidator,
+      batchCloseDateValidator,
+      batchNumberValidator,
+      longitudinalQuestionsValidator
+    };
   }
 
   @Override

@@ -1,5 +1,7 @@
 package uk.gov.ons.ssdc.jobprocessor.transformer;
 
+import java.util.Map;
+import java.util.UUID;
 import org.springframework.context.ApplicationContext;
 import uk.gov.ons.ssdc.common.model.entity.Case;
 import uk.gov.ons.ssdc.common.model.entity.Job;
@@ -13,10 +15,6 @@ import uk.gov.ons.ssdc.jobprocessor.model.dto.messaging.UpdateSample;
 import uk.gov.ons.ssdc.jobprocessor.repository.CaseRepository;
 import uk.gov.ons.ssdc.jobprocessor.utility.EventHelper;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
 public class BulkPHMUpdateSampleTransformer implements Transformer {
   private static CaseRepository caseRepository = null;
 
@@ -25,7 +23,10 @@ public class BulkPHMUpdateSampleTransformer implements Transformer {
       Job job, JobRow jobRow, ColumnValidator[] columnValidators, String topic) {
     Map<String, String> rowData = jobRow.getRowData();
 
-    Case caze = getCaseRepository().findCaseByParticipantId(rowData.get("PARTICIPANT_ID"));
+    Case caze =
+        getCaseRepository()
+            .findCaseByParticipantIdAndCollectionExercise(
+                rowData.get("PARTICIPANT_ID"), job.getCollectionExercise().getId());
 
     UpdateSample updateSample = new UpdateSample();
     updateSample.setCaseId(UUID.fromString(caze.getId().toString()));
@@ -43,6 +44,7 @@ public class BulkPHMUpdateSampleTransformer implements Transformer {
 
     return event;
   }
+
   private CaseRepository getCaseRepository() {
     if (caseRepository == null) {
       ApplicationContext applicationContext = ApplicationContextProvider.getApplicationContext();

@@ -56,8 +56,7 @@ public class JobTypeHelper {
             updateSensitiveSampleTopic, sharedPubsubProject, collectionExercise);
       case BULK_PHM_UPDATE_SAMPLE:
         return new BulkPHMUpdateSampleTypeProcessor(
-                updateSampleTopic, sharedPubsubProject, collectionExercise
-        );
+            updateSampleTopic, sharedPubsubProject, collectionExercise);
 
       default:
         // This code should be unreachable, providing we have a case for every JobType
