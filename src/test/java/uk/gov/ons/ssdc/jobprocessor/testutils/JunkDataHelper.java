@@ -65,7 +65,7 @@ public class JunkDataHelper {
     junkCollectionExercise.setMetadata(null);
     junkCollectionExercise.setCollectionInstrumentSelectionRules(
         new CollectionInstrumentSelectionRule[] {
-          new CollectionInstrumentSelectionRule(0, null, "junkCollectionInstrumentUrl")
+          new CollectionInstrumentSelectionRule(0, null, "junkCollectionInstrumentUrl", null)
         });
     collectionExerciseRepository.saveAndFlush(junkCollectionExercise);
 
