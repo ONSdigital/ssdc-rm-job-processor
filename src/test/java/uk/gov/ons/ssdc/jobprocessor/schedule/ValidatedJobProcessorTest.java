@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.ons.ssdc.common.model.entity.Job;
+import uk.gov.ons.ssdc.common.model.entity.JobRow;
 import uk.gov.ons.ssdc.common.model.entity.JobRowStatus;
 import uk.gov.ons.ssdc.common.model.entity.JobStatus;
 import uk.gov.ons.ssdc.jobprocessor.repository.JobRepository;
@@ -97,5 +98,19 @@ class ValidatedJobProcessorTest {
     verify(jobRepository, times(3)).save(any(Job.class));
     verify(jobRowRepository, times(3))
         .deleteByJobAndJobRowStatus(any(Job.class), eq(JobRowStatus.PROCESSED));
+  }
+
+  @Test
+  void removeCancelledJobRow() {
+
+    // Given
+    List<JobRow> jobRows = List.of(new JobRow());
+    when(jobRowRepository.findTop500ByJob_JobStatus(JobStatus.CANCELLED)).thenReturn(jobRows);
+
+    // When
+    underTest.removeCancelledJobsRows();
+
+    // Then
+    verify(jobRowRepository).deleteAll(jobRows);
   }
 }

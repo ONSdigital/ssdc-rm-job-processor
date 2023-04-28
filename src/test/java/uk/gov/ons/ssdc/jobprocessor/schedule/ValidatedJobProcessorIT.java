@@ -328,6 +328,44 @@ public class ValidatedJobProcessorIT {
     }
   }
 
+  @Test
+  void deleteCancelledJobJobRow() throws InterruptedException {
+    pubsubHelper.purgeSharedProjectMessages(NEW_CASE_SUBSCRIPTION, newCaseTopic);
+
+    try (QueueSpy<EventDTO> surveyUpdateQueue =
+        pubsubHelper.sharedProjectListen(NEW_CASE_SUBSCRIPTION, EventDTO.class)) {
+      CollectionExercise collectionExercise = junkDataHelper.setupJunkCollex();
+
+      Job job = new Job();
+      job.setId(UUID.randomUUID());
+      job.setCollectionExercise(collectionExercise);
+      job.setJobStatus(JobStatus.CANCELLED);
+      job.setJobType(JobType.SAMPLE);
+      job.setCreatedBy("norman");
+      job.setCreatedAt(OffsetDateTime.now());
+      job.setFileId(UUID.randomUUID());
+      job.setFileName("normansfile.csv");
+      job = jobRepository.saveAndFlush(job);
+
+      jobRepository.saveAndFlush(job);
+
+      JobRow jobRow = new JobRow();
+      jobRow.setId(UUID.randomUUID());
+      jobRow.setJob(job);
+      jobRow.setJobRowStatus(JobRowStatus.VALIDATED_OK);
+      jobRow.setRowData(Map.of("Junk", "test junk", "SensitiveJunk", "sensitive"));
+      jobRow.setOriginalRowData(new String[] {"foo", "bar"});
+      jobRowRepository.saveAndFlush(jobRow);
+
+      // Now check that the job processed OK
+      EventDTO emittedEvent = surveyUpdateQueue.getQueue().poll(5, TimeUnit.SECONDS);
+      assertThat(emittedEvent).isNull();
+
+      Optional<JobRow> optionalJobRow = jobRowRepository.findById(jobRow.getId());
+      assertThat(optionalJobRow.isPresent()).isFalse();
+    }
+  }
+
   private Job getProcessedJob(UUID jobId) {
     LocalTime testTimeout = LocalTime.now().plusSeconds(60);
 

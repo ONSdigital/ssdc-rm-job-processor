@@ -5,6 +5,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.ons.ssdc.common.model.entity.Job;
+import uk.gov.ons.ssdc.common.model.entity.JobRow;
 import uk.gov.ons.ssdc.common.model.entity.JobRowStatus;
 import uk.gov.ons.ssdc.common.model.entity.JobStatus;
 import uk.gov.ons.ssdc.jobprocessor.repository.JobRepository;
@@ -12,6 +13,7 @@ import uk.gov.ons.ssdc.jobprocessor.repository.JobRowRepository;
 
 @Component
 public class ValidatedJobProcessor {
+
   private final JobRepository jobRepository;
   private final JobRowRepository jobRowRepository;
   private final RowChunkProcessor rowChunkProcessor;
@@ -40,5 +42,12 @@ public class ValidatedJobProcessor {
 
       jobRowRepository.deleteByJobAndJobRowStatus(job, JobRowStatus.PROCESSED);
     }
+  }
+
+  @Scheduled(fixedDelayString = "1000")
+  @Transactional
+  public void removeCancelledJobsRows() {
+    List<JobRow> jobRows = jobRowRepository.findTop500ByJob_JobStatus(JobStatus.CANCELLED);
+    jobRowRepository.deleteAll(jobRows);
   }
 }

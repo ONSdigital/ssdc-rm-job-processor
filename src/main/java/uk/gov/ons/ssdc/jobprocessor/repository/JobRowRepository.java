@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import uk.gov.ons.ssdc.common.model.entity.Job;
 import uk.gov.ons.ssdc.common.model.entity.JobRow;
 import uk.gov.ons.ssdc.common.model.entity.JobRowStatus;
+import uk.gov.ons.ssdc.common.model.entity.JobStatus;
 
 public interface JobRowRepository extends JpaRepository<JobRow, UUID> {
   boolean existsByJobAndJobRowStatus(Job job, JobRowStatus jobRowStatus);
@@ -27,4 +28,6 @@ public interface JobRowRepository extends JpaRepository<JobRow, UUID> {
   void deleteByJob(@Param("job") Job job);
 
   List<JobRow> findTop500ByJobAndJobRowStatus(Job job, JobRowStatus jobRowStatus);
+
+  List<JobRow> findTop500ByJob_JobStatus(JobStatus jobStatus);
 }
