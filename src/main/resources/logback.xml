@@ -29,7 +29,7 @@
                     <fieldName>created</fieldName>
                 </timestamp>
                 <globalCustomFields>
-                    <customFields>{"service":"Support Tool"}</customFields>
+                    <customFields>{"service":"Job Processor"}</customFields>
                 </globalCustomFields>
                 <message>
                     <fieldName>event</fieldName>
