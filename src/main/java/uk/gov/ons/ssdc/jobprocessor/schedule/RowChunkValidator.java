@@ -3,9 +3,11 @@ package uk.gov.ons.ssdc.jobprocessor.schedule;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
 import uk.gov.ons.ssdc.common.model.entity.Job;
 import uk.gov.ons.ssdc.common.model.entity.JobRow;
 import uk.gov.ons.ssdc.common.model.entity.JobRowStatus;
@@ -59,10 +61,9 @@ public class RowChunkValidator {
             rowStatus = JobRowStatus.VALIDATED_ERROR;
             rowValidationErrors.add(columnValidationErrors.get());
           }
-
-        } catch (IllegalArgumentException ex) {
+        } catch (Exception ex) {
           rowStatus = JobRowStatus.VALIDATED_ERROR;
-          rowValidationErrors.add("Error on cell: " + jobRow.getRowData());
+          rowValidationErrors.add(ex.getMessage());
         }
       }
 
