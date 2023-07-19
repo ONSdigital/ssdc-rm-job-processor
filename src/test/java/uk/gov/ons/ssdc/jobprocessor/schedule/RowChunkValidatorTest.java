@@ -19,6 +19,7 @@ import uk.gov.ons.ssdc.common.model.entity.JobRowStatus;
 import uk.gov.ons.ssdc.common.model.entity.JobType;
 import uk.gov.ons.ssdc.common.model.entity.Survey;
 import uk.gov.ons.ssdc.common.validation.ColumnValidator;
+import uk.gov.ons.ssdc.common.validation.EmailRule;
 import uk.gov.ons.ssdc.common.validation.LengthRule;
 import uk.gov.ons.ssdc.common.validation.MandatoryRule;
 import uk.gov.ons.ssdc.common.validation.Rule;
@@ -490,6 +491,56 @@ class RowChunkValidatorTest {
     assertThat(actualJobRows.get(0).getJobRowStatus()).isEqualTo(JobRowStatus.VALIDATED_ERROR);
     assertThat(actualJobRows.get(0).getValidationErrorDescriptions())
         .isEqualTo("fieldToUpdate column nonexistent column does not exist");
+
+    ArgumentCaptor<Job> jobArgumentCaptor = ArgumentCaptor.forClass(Job.class);
+    verify(jobRepository).saveAndFlush(jobArgumentCaptor.capture());
+    Job actualJob = jobArgumentCaptor.getValue();
+
+    assertThat(actualJob.getValidatingRowNumber()).isEqualTo(1);
+    assertThat(actualJob.getErrorRowCount()).isEqualTo(1);
+  }
+
+  @Test
+  void processChunkFailsValidationOnNonAscii() {
+    // Given
+    CollectionExercise collectionExercise = new CollectionExercise();
+    Job job = new Job();
+    job.setJobType(JobType.SAMPLE);
+    job.setCollectionExercise(collectionExercise);
+
+    ColumnValidator[] columnValidators =
+        new ColumnValidator[] {
+          new ColumnValidator("test column", true, new Rule[] {new EmailRule(true)})
+        };
+
+    Survey survey = new Survey();
+    survey.setSampleValidationRules(columnValidators);
+    collectionExercise.setSurvey(survey);
+
+    JobTypeProcessor jobTypeProcessor = new SampleLoadTypeProcessor("", "", collectionExercise);
+
+    JobRow jobRow = new JobRow();
+    jobRow.setRowData(Map.of("test column", "test@example.com"));
+    List<JobRow> jobRows = List.of(jobRow);
+
+    when(jobTypeHelper.getJobTypeProcessor(job.getJobType(), collectionExercise))
+        .thenReturn(jobTypeProcessor);
+
+    when(jobRowRepository.findTop500ByJobAndJobRowStatus(job, JobRowStatus.STAGED))
+        .thenReturn(jobRows);
+
+    // When
+    underTest.processChunk(job);
+
+    // Then
+    ArgumentCaptor<List<JobRow>> jobRowArgumentCaptor = ArgumentCaptor.forClass(List.class);
+    verify(jobRowRepository).saveAll(jobRowArgumentCaptor.capture());
+    List<JobRow> actualJobRows = jobRowArgumentCaptor.getValue();
+
+    assertThat(actualJobRows.size()).isEqualTo(1);
+    assertThat(actualJobRows.get(0).getJobRowStatus()).isEqualTo(JobRowStatus.VALIDATED_ERROR);
+    assertThat(actualJobRows.get(0).getValidationErrorDescriptions())
+        .isEqualTo("Error on cell: {test column=test@example.com}");
 
     ArgumentCaptor<Job> jobArgumentCaptor = ArgumentCaptor.forClass(Job.class);
     verify(jobRepository).saveAndFlush(jobArgumentCaptor.capture());
