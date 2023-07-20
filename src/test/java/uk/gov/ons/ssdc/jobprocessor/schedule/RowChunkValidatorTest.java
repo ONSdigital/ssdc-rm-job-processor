@@ -543,7 +543,8 @@ class RowChunkValidatorTest {
     assertThat(actualJobRows.size()).isEqualTo(1);
     assertThat(actualJobRows.get(0).getJobRowStatus()).isEqualTo(JobRowStatus.VALIDATED_ERROR);
     assertThat(actualJobRows.get(0).getValidationErrorDescriptions())
-        .isEqualTo("An unexpected error occured");
+        .isEqualTo(
+            "Unexpected technical failure, please report this to the dev team: An unexpected error occured");
     assertThrows(NullPointerException.class, () -> columnValidatorMock.validateRow(jobRowData));
 
     ArgumentCaptor<Job> jobArgumentCaptor = ArgumentCaptor.forClass(Job.class);

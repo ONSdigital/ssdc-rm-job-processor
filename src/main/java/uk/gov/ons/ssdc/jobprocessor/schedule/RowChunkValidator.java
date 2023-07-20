@@ -61,7 +61,9 @@ public class RowChunkValidator {
           }
         } catch (Exception ex) {
           rowStatus = JobRowStatus.VALIDATED_ERROR;
-          rowValidationErrors.add(ex.getMessage());
+          rowValidationErrors.add(
+              "Unexpected technical failure, please report this to the dev team: "
+                  + ex.getMessage());
         }
       }
 
