@@ -1,6 +1,7 @@
 package uk.gov.ons.ssdc.jobprocessor.schedule;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.ons.ssdc.common.model.entity.CollectionExercise;
 import uk.gov.ons.ssdc.common.model.entity.Job;
@@ -490,6 +492,60 @@ class RowChunkValidatorTest {
     assertThat(actualJobRows.get(0).getJobRowStatus()).isEqualTo(JobRowStatus.VALIDATED_ERROR);
     assertThat(actualJobRows.get(0).getValidationErrorDescriptions())
         .isEqualTo("fieldToUpdate column nonexistent column does not exist");
+
+    ArgumentCaptor<Job> jobArgumentCaptor = ArgumentCaptor.forClass(Job.class);
+    verify(jobRepository).saveAndFlush(jobArgumentCaptor.capture());
+    Job actualJob = jobArgumentCaptor.getValue();
+
+    assertThat(actualJob.getValidatingRowNumber()).isEqualTo(1);
+    assertThat(actualJob.getErrorRowCount()).isEqualTo(1);
+  }
+
+  @Test
+  void processChunkFailsValidationOnUnexpectedErrorDuringValidation() {
+    // Given
+    CollectionExercise collectionExercise = new CollectionExercise();
+    Job job = new Job();
+    job.setJobType(JobType.SAMPLE);
+    job.setCollectionExercise(collectionExercise);
+
+    ColumnValidator columnValidatorMock = Mockito.mock(ColumnValidator.class);
+
+    Survey survey = new Survey();
+    survey.setSampleValidationRules(new ColumnValidator[] {columnValidatorMock});
+    collectionExercise.setSurvey(survey);
+
+    JobTypeProcessor jobTypeProcessor = new SampleLoadTypeProcessor("", "", collectionExercise);
+
+    Map<String, String> jobRowData = Map.of("test column", "test@example.com");
+
+    JobRow jobRow = new JobRow();
+    jobRow.setRowData(jobRowData);
+    List<JobRow> jobRows = List.of(jobRow);
+
+    when(jobTypeHelper.getJobTypeProcessor(job.getJobType(), collectionExercise))
+        .thenReturn(jobTypeProcessor);
+
+    when(jobRowRepository.findTop500ByJobAndJobRowStatus(job, JobRowStatus.STAGED))
+        .thenReturn(jobRows);
+
+    when(columnValidatorMock.validateRow(jobRowData))
+        .thenThrow(new NullPointerException("An unexpected error occured"));
+
+    // When
+    underTest.processChunk(job);
+
+    // Then
+    ArgumentCaptor<List<JobRow>> jobRowArgumentCaptor = ArgumentCaptor.forClass(List.class);
+    verify(jobRowRepository).saveAll(jobRowArgumentCaptor.capture());
+    List<JobRow> actualJobRows = jobRowArgumentCaptor.getValue();
+
+    assertThat(actualJobRows.size()).isEqualTo(1);
+    assertThat(actualJobRows.get(0).getJobRowStatus()).isEqualTo(JobRowStatus.VALIDATED_ERROR);
+    assertThat(actualJobRows.get(0).getValidationErrorDescriptions())
+        .isEqualTo(
+            "Unexpected technical failure, please report this to the dev team: An unexpected error occured");
+    assertThrows(NullPointerException.class, () -> columnValidatorMock.validateRow(jobRowData));
 
     ArgumentCaptor<Job> jobArgumentCaptor = ArgumentCaptor.forClass(Job.class);
     verify(jobRepository).saveAndFlush(jobArgumentCaptor.capture());

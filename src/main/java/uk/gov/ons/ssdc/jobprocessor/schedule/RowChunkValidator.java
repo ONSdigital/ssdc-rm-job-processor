@@ -51,11 +51,19 @@ public class RowChunkValidator {
       }
 
       for (ColumnValidator columnValidator : columnValidators) {
-        Optional<String> columnValidationErrors = columnValidator.validateRow(jobRow.getRowData());
+        try {
+          Optional<String> columnValidationErrors =
+              columnValidator.validateRow(jobRow.getRowData());
 
-        if (columnValidationErrors.isPresent()) {
+          if (columnValidationErrors.isPresent()) {
+            rowStatus = JobRowStatus.VALIDATED_ERROR;
+            rowValidationErrors.add(columnValidationErrors.get());
+          }
+        } catch (Exception ex) {
           rowStatus = JobRowStatus.VALIDATED_ERROR;
-          rowValidationErrors.add(columnValidationErrors.get());
+          rowValidationErrors.add(
+              "Unexpected technical failure, please report this to the dev team: "
+                  + ex.getMessage());
         }
       }
 
