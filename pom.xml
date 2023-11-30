@@ -200,30 +200,30 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>com.dkanejs.maven.plugins</groupId>
-        <artifactId>docker-compose-maven-plugin</artifactId>
-        <version>4.0.0</version>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.1.0</version>
         <executions>
           <execution>
-            <id>up</id>
+            <id>Docker Compose Up</id>
             <phase>pre-integration-test</phase>
             <goals>
-              <goal>up</goal>
+              <goal>exec</goal>
             </goals>
             <configuration>
-              <composeFile>${project.basedir}/src/test/resources/docker-compose.yml</composeFile>
-              <detachedMode>true</detachedMode>
+              <executable>docker</executable>
+              <commandlineArgs>compose -f src/test/resources/docker-compose.yml up -d</commandlineArgs>
             </configuration>
           </execution>
           <execution>
-            <id>down</id>
+            <id>Docker Compose Down</id>
             <phase>post-integration-test</phase>
             <goals>
-              <goal>down</goal>
+              <goal>exec</goal>
             </goals>
             <configuration>
-              <composeFile>${project.basedir}/src/test/resources/docker-compose.yml</composeFile>
-              <removeVolumes>true</removeVolumes>
+              <executable>docker</executable>
+              <commandlineArgs>compose -f src/test/resources/docker-compose.yml down -v</commandlineArgs>
             </configuration>
           </execution>
         </executions>
