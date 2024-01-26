@@ -9,13 +9,13 @@ import static org.mockito.Mockito.when;
 
 import com.google.cloud.spring.pubsub.core.PubSubTemplate;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.util.concurrent.ListenableFuture;
 import uk.gov.ons.ssdc.common.model.entity.CollectionExercise;
 import uk.gov.ons.ssdc.common.model.entity.Job;
 import uk.gov.ons.ssdc.common.model.entity.JobRow;
@@ -73,7 +73,7 @@ class RowChunkProcessorTest {
     when(transformer.transformRow(job, jobRow, columnValidators, jobTypeProcessor.getTopic()))
         .thenReturn(messageToPublish);
 
-    ListenableFuture<String> listenableFuture = mock(ListenableFuture.class);
+    CompletableFuture<String> listenableFuture = mock(CompletableFuture.class);
     when(pubSubTemplate.publish(jobTypeProcessor.getTopic(), messageToPublish))
         .thenReturn(listenableFuture);
 

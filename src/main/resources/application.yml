@@ -12,7 +12,7 @@ spring:
     hikari:
       maximumPoolSize: 50
   jpa:
-    database-platform: org.hibernate.dialect.PostgreSQL10Dialect
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: validate
     properties:
