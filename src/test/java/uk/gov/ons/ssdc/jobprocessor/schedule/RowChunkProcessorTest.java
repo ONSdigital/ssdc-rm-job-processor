@@ -73,9 +73,9 @@ class RowChunkProcessorTest {
     when(transformer.transformRow(job, jobRow, columnValidators, jobTypeProcessor.getTopic()))
         .thenReturn(messageToPublish);
 
-    CompletableFuture<String> listenableFuture = mock(CompletableFuture.class);
+    CompletableFuture<String> completableFuture = mock(CompletableFuture.class);
     when(pubSubTemplate.publish(jobTypeProcessor.getTopic(), messageToPublish))
-        .thenReturn(listenableFuture);
+        .thenReturn(completableFuture);
 
     // When
     underTest.processChunk(job);
