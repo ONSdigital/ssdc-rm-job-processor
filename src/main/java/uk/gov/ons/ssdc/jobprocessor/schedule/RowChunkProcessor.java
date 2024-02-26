@@ -4,11 +4,11 @@ import com.godaddy.logging.Logger;
 import com.godaddy.logging.LoggerFactory;
 import com.google.cloud.spring.pubsub.core.PubSubTemplate;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.concurrent.ListenableFuture;
 import uk.gov.ons.ssdc.common.model.entity.Job;
 import uk.gov.ons.ssdc.common.model.entity.JobRow;
 import uk.gov.ons.ssdc.common.model.entity.JobRowStatus;
@@ -46,7 +46,7 @@ public class RowChunkProcessor {
 
     for (JobRow jobRow : jobRows) {
       try {
-        ListenableFuture<String> future =
+        CompletableFuture<String> future =
             pubSubTemplate.publish(
                 jobTypeProcessor.getTopic(),
                 jobTypeProcessor
