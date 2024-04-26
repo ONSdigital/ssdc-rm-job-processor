@@ -1,11 +1,11 @@
 package uk.gov.ons.ssdc.jobprocessor.schedule;
 
-import com.godaddy.logging.Logger;
-import com.godaddy.logging.LoggerFactory;
 import com.google.cloud.spring.pubsub.core.PubSubTemplate;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,9 +64,12 @@ public class RowChunkProcessor {
         job.setProcessingRowNumber(job.getProcessingRowNumber() + 1);
       } catch (Exception e) {
         // The message sending will be retried...
-        log.with("job ID", job.getId())
-            .with("row ID", jobRow.getId())
-            .error("Failed to send message to pubsub", e);
+        log.atError()
+            .setMessage("Failed to send message to pubsub")
+            .setCause(e)
+            .addKeyValue("row ID", jobRow.getId())
+            .addKeyValue("job ID", job.getId())
+            .log();
       }
     }
 
