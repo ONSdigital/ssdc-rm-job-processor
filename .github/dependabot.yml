@@ -2,11 +2,14 @@ version: 2
 updates:
   - package-ecosystem: "maven"
     directory: "/"
+    target-branch: "main"
+    groups:
+      maven-security-updates:
+        applies-to: "security-updates"
+        patterns:
+          - "*"
     schedule:
-      interval: "weekly"
-    ignore:
-      - dependency-name: "*"
-        update-types: [ "version-update:semver-patch", "version-update:semver-minor" ]
+      interval: "daily"
     labels:
       - "patch"
       - "dependencies"
