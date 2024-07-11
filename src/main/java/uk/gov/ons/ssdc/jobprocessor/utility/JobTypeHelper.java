@@ -15,8 +15,8 @@ import uk.gov.ons.ssdc.jobprocessor.jobtype.processors.SampleLoadTypeProcessor;
 public class JobTypeHelper {
   //  We load these topics etc in here rather than in the POJOS
   //  as this has nice @value wiring as a Component
-  @Value("${queueconfig.shared-pubsub-project}")
-  private String sharedPubsubProject;
+  @Value("${spring.cloud.gcp.pubsub.project-id}")
+  private String pubsubProject;
 
   @Value("${queueconfig.new-case-topic}")
   private String newCaseTopic;
@@ -42,23 +42,21 @@ public class JobTypeHelper {
 
     switch (jobType) {
       case SAMPLE:
-        return new SampleLoadTypeProcessor(newCaseTopic, sharedPubsubProject, collectionExercise);
+        return new SampleLoadTypeProcessor(newCaseTopic, pubsubProject, collectionExercise);
 
       case BULK_REFUSAL:
-        return new BulkRefusalTypeProcessor(
-            refusalEventTopic, sharedPubsubProject, collectionExercise);
+        return new BulkRefusalTypeProcessor(refusalEventTopic, pubsubProject, collectionExercise);
 
       case BULK_INVALID:
-        return new BulkInvalidTypeProcessor(
-            invalidCaseTopic, sharedPubsubProject, collectionExercise);
+        return new BulkInvalidTypeProcessor(invalidCaseTopic, pubsubProject, collectionExercise);
 
       case BULK_UPDATE_SAMPLE:
         return new BulkUpdateSampleTypeProcessor(
-            updateSampleTopic, sharedPubsubProject, collectionExercise);
+            updateSampleTopic, pubsubProject, collectionExercise);
 
       case BULK_UPDATE_SAMPLE_SENSITIVE:
         return new BulkUpdateSensitiveSampleTypeProcessor(
-            updateSensitiveSampleTopic, sharedPubsubProject, collectionExercise);
+            updateSensitiveSampleTopic, pubsubProject, collectionExercise);
 
       default:
         // This code should be unreachable, providing we have a case for every JobType

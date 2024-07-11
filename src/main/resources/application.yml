@@ -48,4 +48,3 @@ queueconfig:
   update-sample-topic: event_update-sample
   update-sample-sensitive-topic: event_update-sample-sensitive
   publishtimeout: 30  # In seconds
-  shared-pubsub-project: REPLACEME

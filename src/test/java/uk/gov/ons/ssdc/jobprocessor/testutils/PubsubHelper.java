@@ -26,14 +26,14 @@ public class PubsubHelper {
 
   @Autowired private GcpPubSubProperties gcpPubSubProperties;
 
-  @Value("${queueconfig.shared-pubsub-project}")
-  private String sharedPubsubProject;
+  @Value("${spring.cloud.gcp.pubsub.project-id}")
+  private String pubsubProject;
 
   private static final ObjectMapper objectMapper = ObjectMapperFactory.objectMapper();
 
-  public <T> QueueSpy sharedProjectListen(String subscription, Class<T> contentClass) {
+  public <T> QueueSpy pubsubProjectListen(String subscription, Class<T> contentClass) {
     String fullyQualifiedSubscription =
-        toProjectSubscriptionName(subscription, sharedPubsubProject).toString();
+        toProjectSubscriptionName(subscription, pubsubProject).toString();
     return listen(fullyQualifiedSubscription, contentClass);
   }
 
@@ -60,8 +60,8 @@ public class PubsubHelper {
     return new QueueSpy(queue, subscriber);
   }
 
-  public void purgeSharedProjectMessages(String subscription, String topic) {
-    purgeMessages(subscription, topic, sharedPubsubProject);
+  public void purgePubsubProjectMessages(String subscription, String topic) {
+    purgeMessages(subscription, topic, pubsubProject);
   }
 
   private void purgeMessages(String subscription, String topic, String project) {

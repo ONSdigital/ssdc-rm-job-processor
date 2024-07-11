@@ -16,14 +16,14 @@ public class BulkUpdateSampleTypeProcessor extends JobTypeProcessor {
       new BulkUpdateSampleTransformer();
 
   public BulkUpdateSampleTypeProcessor(
-      String topic, String sharedPubsubProject, CollectionExercise collectionExercise) {
+      String topic, String pubsubProject, CollectionExercise collectionExercise) {
     setJobType(JobType.BULK_UPDATE_SAMPLE);
     setTransformer(BULK_SAMPLE_UPDATE_TRANSFORMER);
 
     setColumnValidators(getBulkSampleValidationRulesHeaderRowOnly());
     setSampleAndSensitiveDataColumnMaps(
         collectionExercise.getSurvey().getSampleValidationRules(), collectionExercise);
-    setTopic(toProjectTopicName(topic, sharedPubsubProject).toString());
+    setTopic(toProjectTopicName(topic, pubsubProject).toString());
     setFileLoadPermission(UserGroupAuthorisedActivityType.LOAD_BULK_UPDATE_SAMPLE);
     setFileViewProgressPermission(UserGroupAuthorisedActivityType.VIEW_BULK_UPDATE_SAMPLE_PROGRESS);
   }
