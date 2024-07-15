@@ -15,11 +15,11 @@ public class SampleLoadTypeProcessor extends JobTypeProcessor {
   private static final Transformer SAMPLE_LOAD_TRANSFORMER = new NewCaseTransformer();
 
   public SampleLoadTypeProcessor(
-      String topic, String sharedPubsubProject, CollectionExercise collectionExercise) {
+      String topic, String pubsubProject, CollectionExercise collectionExercise) {
     setJobType(JobType.SAMPLE);
     setTransformer(SAMPLE_LOAD_TRANSFORMER);
     setColumnValidators(collectionExercise.getSurvey().getSampleValidationRules());
-    setTopic(toProjectTopicName(topic, sharedPubsubProject).toString());
+    setTopic(toProjectTopicName(topic, pubsubProject).toString());
     setFileLoadPermission(UserGroupAuthorisedActivityType.LOAD_SAMPLE);
     setFileViewProgressPermission(UserGroupAuthorisedActivityType.VIEW_SAMPLE_LOAD_PROGRESS);
   }

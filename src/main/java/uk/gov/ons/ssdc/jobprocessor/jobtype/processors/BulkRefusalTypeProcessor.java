@@ -21,11 +21,11 @@ public class BulkRefusalTypeProcessor extends JobTypeProcessor {
   private static final Transformer BULK_REFUSAL_TRANSFORMER = new BulkRefusalTransformer();
 
   public BulkRefusalTypeProcessor(
-      String topic, String sharedPubsubProject, CollectionExercise collectionExercise) {
+      String topic, String pubsubProject, CollectionExercise collectionExercise) {
     setJobType(JobType.BULK_REFUSAL);
     setTransformer(BULK_REFUSAL_TRANSFORMER);
     setColumnValidators(getBulkRefusalProcessorValidationRules(collectionExercise));
-    setTopic(toProjectTopicName(topic, sharedPubsubProject).toString());
+    setTopic(toProjectTopicName(topic, pubsubProject).toString());
     setFileLoadPermission(UserGroupAuthorisedActivityType.LOAD_BULK_REFUSAL);
     setFileViewProgressPermission(UserGroupAuthorisedActivityType.VIEW_BULK_REFUSAL_PROGRESS);
   }

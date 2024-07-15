@@ -18,11 +18,11 @@ public class BulkInvalidTypeProcessor extends JobTypeProcessor {
   private static final Transformer BULK_INVALID_TRANSFORMER = new BulkInvalidCaseTransformer();
 
   public BulkInvalidTypeProcessor(
-      String topic, String sharedPubsubProject, CollectionExercise collectionExercise) {
+      String topic, String pubsubProject, CollectionExercise collectionExercise) {
     setJobType(JobType.BULK_INVALID);
     setTransformer(BULK_INVALID_TRANSFORMER);
     setColumnValidators(getBulkInvalidCaseValidationRules(collectionExercise));
-    setTopic(toProjectTopicName(topic, sharedPubsubProject).toString());
+    setTopic(toProjectTopicName(topic, pubsubProject).toString());
     setFileLoadPermission(UserGroupAuthorisedActivityType.LOAD_BULK_INVALID);
     setFileViewProgressPermission(UserGroupAuthorisedActivityType.VIEW_BULK_INVALID_PROGRESS);
   }

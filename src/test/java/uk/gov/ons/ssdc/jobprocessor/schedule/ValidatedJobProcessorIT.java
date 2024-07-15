@@ -68,10 +68,10 @@ public class ValidatedJobProcessorIT {
 
   @Test
   void processStagedJobsSample() throws InterruptedException {
-    pubsubHelper.purgeSharedProjectMessages(NEW_CASE_SUBSCRIPTION, newCaseTopic);
+    pubsubHelper.purgePubsubProjectMessages(NEW_CASE_SUBSCRIPTION, newCaseTopic);
 
     try (QueueSpy<EventDTO> surveyUpdateQueue =
-        pubsubHelper.sharedProjectListen(NEW_CASE_SUBSCRIPTION, EventDTO.class)) {
+        pubsubHelper.pubsubProjectListen(NEW_CASE_SUBSCRIPTION, EventDTO.class)) {
       CollectionExercise collectionExercise = junkDataHelper.setupJunkCollex();
 
       Job job = new Job();
@@ -119,10 +119,10 @@ public class ValidatedJobProcessorIT {
 
   @Test
   void processStagedJobsBulkRefusal() throws InterruptedException {
-    pubsubHelper.purgeSharedProjectMessages(REFUSAL_SUBSCRIPTION, refusalEventTopic);
+    pubsubHelper.purgePubsubProjectMessages(REFUSAL_SUBSCRIPTION, refusalEventTopic);
 
     try (QueueSpy<EventDTO> surveyUpdateQueue =
-        pubsubHelper.sharedProjectListen(REFUSAL_SUBSCRIPTION, EventDTO.class)) {
+        pubsubHelper.pubsubProjectListen(REFUSAL_SUBSCRIPTION, EventDTO.class)) {
       Case caze = junkDataHelper.setupJunkCase();
       CollectionExercise collectionExercise = caze.getCollectionExercise();
 
@@ -168,10 +168,10 @@ public class ValidatedJobProcessorIT {
 
   @Test
   void processStagedJobsBulkInvalid() throws InterruptedException {
-    pubsubHelper.purgeSharedProjectMessages(INVALID_SUBSCRIPTION, invalidCaseEventTopic);
+    pubsubHelper.purgePubsubProjectMessages(INVALID_SUBSCRIPTION, invalidCaseEventTopic);
 
     try (QueueSpy<EventDTO> surveyUpdateQueue =
-        pubsubHelper.sharedProjectListen(INVALID_SUBSCRIPTION, EventDTO.class)) {
+        pubsubHelper.pubsubProjectListen(INVALID_SUBSCRIPTION, EventDTO.class)) {
       Case caze = junkDataHelper.setupJunkCase();
       CollectionExercise collectionExercise = caze.getCollectionExercise();
 
@@ -216,10 +216,10 @@ public class ValidatedJobProcessorIT {
 
   @Test
   void processStagedJobsBulkUpdateSample() throws InterruptedException {
-    pubsubHelper.purgeSharedProjectMessages(UPDATE_SAMPLE_SUBSCRIPTION, updateSampleTopic);
+    pubsubHelper.purgePubsubProjectMessages(UPDATE_SAMPLE_SUBSCRIPTION, updateSampleTopic);
 
     try (QueueSpy<EventDTO> surveyUpdateQueue =
-        pubsubHelper.sharedProjectListen(UPDATE_SAMPLE_SUBSCRIPTION, EventDTO.class)) {
+        pubsubHelper.pubsubProjectListen(UPDATE_SAMPLE_SUBSCRIPTION, EventDTO.class)) {
       Case caze = junkDataHelper.setupJunkCase();
       CollectionExercise collectionExercise = caze.getCollectionExercise();
 
@@ -267,11 +267,11 @@ public class ValidatedJobProcessorIT {
 
   @Test
   void processStagedJobsBulkUpdateSampleSensitive() throws InterruptedException {
-    pubsubHelper.purgeSharedProjectMessages(
+    pubsubHelper.purgePubsubProjectMessages(
         UPDATE_SAMPLE_SENSITIVE_SUBSCRIPTION, updateSampleSensitiveTopic);
 
     try (QueueSpy<EventDTO> surveyUpdateQueue =
-        pubsubHelper.sharedProjectListen(UPDATE_SAMPLE_SENSITIVE_SUBSCRIPTION, EventDTO.class)) {
+        pubsubHelper.pubsubProjectListen(UPDATE_SAMPLE_SENSITIVE_SUBSCRIPTION, EventDTO.class)) {
       Case caze = junkDataHelper.setupJunkCase();
       CollectionExercise collectionExercise = caze.getCollectionExercise();
 
