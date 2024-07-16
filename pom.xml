@@ -287,12 +287,33 @@
             </goals>
           </execution>
           <execution>
-            <id>report</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>report</goal>
-            </goals>
-          </execution>
+             <id>report</id>
+             <phase>verify</phase>
+             <goals>
+               <goal>report</goal>
+             </goals>
+           </execution>
+           <execution>
+             <id>jacoco-check</id>
+             <phase>verify</phase>
+             <goals>
+               <goal>check</goal>
+             </goals>
+             <configuration>
+               <rules>
+                 <rule>
+                   <element>BUNDLE</element>
+                   <limits>
+                     <limit>
+                       <counter>LINE</counter>
+                       <value>COVEREDRATIO</value>
+                       <minimum>75%</minimum>
+                     </limit>
+                   </limits>
+                 </rule>
+               </rules>
+             </configuration>
+           </execution>
         </executions>
       </plugin>
       <plugin>
