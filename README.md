@@ -1,5 +1,6 @@
 # ssdc-rm-job-processor
 
+
 The Job Processor handles the validation and processing of batches, for sample loading, bulk case refusal, bulk case invaldation, bulk case sample updadtes and bulk updates of sensitive PII data.
 
 The Job Processor takes data loaded in CSV files via the Support Tool or Response Operations UI, validates and transforms that data, before shuttling it onto Google Pub/Sub topics, for processing in the Case Processor.
