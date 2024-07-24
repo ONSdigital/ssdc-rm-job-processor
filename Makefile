@@ -6,7 +6,7 @@ build: install docker-build
 build-no-test: install-no-test docker-build
 
 install-no-test:
-	mvn clean install -Dmaven.test.skip=true -Dexec.skip=true
+	mvn clean install -Dmaven.test.skip=true -Dexec.skip=true -Djacoco.skip=true
 
 format:
 	mvn fmt:format

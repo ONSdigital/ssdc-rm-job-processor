@@ -62,11 +62,3 @@ jobs:
 
       - name: Run Tests
         run: make test
-
-      - name: Run Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          # NB: fail_ci_if_error is enabled to make any teething issues with Codecov visible.
-          # If Codecov has outage issues in the future, this can be toggled to false to allow the action to pass.
-          fail_ci_if_error: true
