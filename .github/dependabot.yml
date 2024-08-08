@@ -14,3 +14,22 @@ updates:
       - "patch"
       - "dependencies"
     open-pull-requests-limit: 0
+
+  # Update GitHub actions in workflows
+  - package-ecosystem: github-actions
+    directory: /
+    # Every week
+    schedule:
+      interval: weekly
+
+    labels:
+      - "patch"
+      - "dependencies"
+
+    groups:
+      # Group updates into fewer pull requests
+      gh-security-updates:
+        applies-to: security-updates
+        patterns:
+          - "*"
+    open-pull-requests-limit: 0
