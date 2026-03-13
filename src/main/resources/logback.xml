@@ -58,10 +58,8 @@
                     <fieldName>data</fieldName>
                     <providers>
                         <arguments>
-                            <includeNonStructuredArguments>true
+                            <includeNonStructuredArguments>false
                             </includeNonStructuredArguments>
-                            <nonStructuredArgumentsFieldPrefix>prefix
-                            </nonStructuredArgumentsFieldPrefix>
                         </arguments>
                         <keyValuePairs>
                         </keyValuePairs>
