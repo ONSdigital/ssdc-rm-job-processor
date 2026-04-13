@@ -55,12 +55,11 @@ DOCKER=docker make <command>
 To run all the tests and build the image
 
 ```shell
-   mvn clean install
    make build
 ```
 
 Just build the image
 
 ```shell
-    mvn -DskipTests -DskipITs -DdockerCompose.skip
     make build-no-test
+```
