@@ -1,0 +1,89 @@
+version: 2
+
+updates:
+  - package-ecosystem: "maven"
+    directory: "/"
+    # Security updates are applied instantly, but minor version patches will be auto-applied weekly.
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "07:00"
+      timezone: "Europe/London"
+    labels:
+      - "dependencies"
+      - "patch"
+      - "java"
+    # Major version updates (when there are no security issues) are ignored.
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
+      # Private libraries live in a private Artifact Registry that Dependabot
+      # cannot authenticate against via WIF, only with long-term keys.
+      # There wouldn't be any security advisories on these anyway, so
+      # the only possible benefit we could get is automatic bumping of
+      # the entity model and validation if we wanted to in the future.
+      - dependency-name: "uk.gov.ons.ssdc:*"
+    # Updates are split into three:
+    # - security-patch-minor: minor/patch changes solving security issues, applied instantly;
+    # - security-major: major changes solving security issues, raised instantly and mergeable with one tick;
+    # - version-patch-minor: minor non-security changes, applied weekly.
+    groups:
+      security-patch-minor:
+        applies-to: security-updates
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+      security-major:
+        applies-to: security-updates
+        patterns:
+          - "*"
+        update-types:
+          - "major"
+      version-patch-minor:
+        applies-to: version-updates
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # Same as above, but for Github Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "07:00"
+      timezone: "Europe/London"
+    labels:
+      - "dependencies"
+      - "patch"
+      - "github-actions"
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
+    groups:
+      security-patch-minor:
+        applies-to: security-updates
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+      security-major:
+        applies-to: security-updates
+        patterns:
+          - "*"
+        update-types:
+          - "major"
+      version-patch-minor:
+        applies-to: version-updates
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"

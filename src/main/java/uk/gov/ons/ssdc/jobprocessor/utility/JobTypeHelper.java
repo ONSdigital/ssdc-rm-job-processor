@@ -40,28 +40,21 @@ public class JobTypeHelper {
       throw new RuntimeException("CollectionExercise is null!");
     }
 
-    switch (jobType) {
-      case SAMPLE:
-        return new SampleLoadTypeProcessor(newCaseTopic, pubsubProject, collectionExercise);
+    return switch (jobType) {
+      case SAMPLE -> new SampleLoadTypeProcessor(newCaseTopic, pubsubProject, collectionExercise);
 
-      case BULK_REFUSAL:
-        return new BulkRefusalTypeProcessor(refusalEventTopic, pubsubProject, collectionExercise);
+      case BULK_REFUSAL ->
+          new BulkRefusalTypeProcessor(refusalEventTopic, pubsubProject, collectionExercise);
 
-      case BULK_INVALID:
-        return new BulkInvalidTypeProcessor(invalidCaseTopic, pubsubProject, collectionExercise);
+      case BULK_INVALID ->
+          new BulkInvalidTypeProcessor(invalidCaseTopic, pubsubProject, collectionExercise);
 
-      case BULK_UPDATE_SAMPLE:
-        return new BulkUpdateSampleTypeProcessor(
-            updateSampleTopic, pubsubProject, collectionExercise);
+      case BULK_UPDATE_SAMPLE ->
+          new BulkUpdateSampleTypeProcessor(updateSampleTopic, pubsubProject, collectionExercise);
 
-      case BULK_UPDATE_SAMPLE_SENSITIVE:
-        return new BulkUpdateSensitiveSampleTypeProcessor(
-            updateSensitiveSampleTopic, pubsubProject, collectionExercise);
-
-      default:
-        // This code should be unreachable, providing we have a case for every JobType
-        throw new RuntimeException(
-            String.format("In getJobTypeSettings the jobType %s wasn't matched", jobType));
-    }
+      case BULK_UPDATE_SAMPLE_SENSITIVE ->
+          new BulkUpdateSensitiveSampleTypeProcessor(
+              updateSensitiveSampleTopic, pubsubProject, collectionExercise);
+    };
   }
 }
